@@ -1,24 +1,33 @@
 package com.example.parkinglot.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
-
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+
+
+
 
 
 @Entity
-@Table(name = "parking zones")
+@Table(name = "parking_zones")
 public class ParkingZone extends BaseEntity{
     @Column(name = "name")
     private String name;
 
-
-    @ManyToOne
-    @JsonBackReference
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "parking_id")
     private Parking parking;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "parkingZone")
     private List<ParkingPlace> parkingPlaces;
 
     public ParkingZone() {

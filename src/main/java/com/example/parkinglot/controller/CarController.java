@@ -1,5 +1,6 @@
 package com.example.parkinglot.controller;
 
+import com.example.parkinglot.model.dto.CarDto;
 import com.example.parkinglot.model.entity.Car;
 import com.example.parkinglot.model.entity.Parking;
 import com.example.parkinglot.model.entity.ParkingPlace;
@@ -19,28 +20,18 @@ public class CarController {
     ParkingPlaceService parkingPlaceService;
 
     @GetMapping("/cars")
-    public List<Car> findAllCars(){
+    public List<CarDto> findAllCars(){
         return carService.getAllCars();
     }
 
+    @GetMapping("/car-on-place/{id}")
+    public Car showCarByParkingPlaceId(@PathVariable Long id){
+        return parkingPlaceService.getCarByPlaceId(id);
+    }
+
     @GetMapping("/car/{id}")
-    public Car showCarById(@PathVariable Long id) {
+    public CarDto showCarById(@PathVariable Long id) {
         return carService.getCarById(id);
-    }
-
-    @GetMapping("/car-parking-place/{id}")
-    public ParkingPlace showParkingPlaceOfTheCar(@PathVariable Long id){
-        return carService.getParkingPlaceOfTheCar(id);
-    }
-
-    @GetMapping("/car-parking-zone/{id}")
-    public ParkingZone showParkingZoneOfTheCar(@PathVariable Long id){
-        return carService.getParkingZoneOfTheCar(id);
-    }
-
-    @GetMapping("/car-parking/{id}")
-    public Parking showParkingOfTheCar(@PathVariable Long id){
-        return carService.getParkingOfTheCar(id);
     }
 
     @PostMapping("/create-car/{placeId}")
@@ -54,7 +45,8 @@ public class CarController {
     @PutMapping("/update-car/{id}")
     public void updateCar(@RequestBody Car car, @PathVariable Long id) {
         car.setId(id);
-        car.setParkingPlace(carService.getCarById(id).getParkingPlace());
+        car.setParkingPlace(carService.getCar(id).getParkingPlace());
+//                getCarById(id).getParkingPlace());
         carService.updateCar(car);
     }
 

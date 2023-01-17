@@ -5,10 +5,11 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "cars")
 public class Car extends BaseEntity {
     @Column(unique = true)
     private String plateNumber;
-    @JsonBackReference
+
     @OneToOne
     private ParkingPlace parkingPlace;
 

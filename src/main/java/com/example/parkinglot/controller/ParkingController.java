@@ -1,8 +1,10 @@
 package com.example.parkinglot.controller;
 
+import com.example.parkinglot.model.dto.ParkingDto;
 import com.example.parkinglot.model.entity.Parking;
 import com.example.parkinglot.model.entity.ParkingPlace;
 import com.example.parkinglot.model.entity.ParkingZone;
+import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingService;
 import com.example.parkinglot.service.ParkingZoneService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,22 +18,24 @@ import java.util.List;
 public class ParkingController {
     @Autowired
     ParkingService parkingService;
+    @Autowired
+    CarService carService;
 
     @GetMapping("/parkings")
-    public List<Parking> showParkings() {
+    public List<ParkingDto> showParkings() {
         return parkingService.getParkings();
     }
 
+    @GetMapping("/car-parking/{id}")
+    public Parking showParkingOfTheCar(@PathVariable Long id){
+        return carService.getParkingOfTheCar(id);
+    }
 
     @GetMapping("/parking/{id}")
     public Parking showParkingById(@PathVariable Long id) {
         return parkingService.getParkingById(id);
     }
 
-    @GetMapping("/zones-in-parking/{id}")
-    public List<ParkingZone> showZonesInParking(@PathVariable Long id) {
-        return parkingService.getZonesByParkingId(id);
-    }
 
     @PostMapping("/create-parking")
     public void createParking(@RequestBody Parking parking) {

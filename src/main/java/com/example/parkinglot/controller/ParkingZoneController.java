@@ -1,8 +1,10 @@
 package com.example.parkinglot.controller;
 
 
+import com.example.parkinglot.model.dto.ParkingZoneDto;
 import com.example.parkinglot.model.entity.ParkingPlace;
 import com.example.parkinglot.model.entity.ParkingZone;
+import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingPlaceService;
 import com.example.parkinglot.service.ParkingService;
 import com.example.parkinglot.service.ParkingZoneService;
@@ -18,12 +20,20 @@ public class ParkingZoneController {
     @Autowired
     ParkingZoneService parkingZoneService;
     @Autowired
+    CarService carService;
+    @Autowired
     ParkingService parkingService;
-//    @Autowired
-//    ParkingPlaceService parkingPlaceService;
 
+    @GetMapping("/zones-in-parking/{id}")
+    public List<ParkingZone> showZonesInParking(@PathVariable Long id) {
+        return parkingService.getZonesByParkingId(id);
+    }
+    @GetMapping("/car-parking-zone/{id}")
+    public ParkingZone showParkingZoneOfTheCar(@PathVariable Long id){
+        return carService.getParkingZoneOfTheCar(id);
+    }
     @GetMapping("/zones")
-    public List<ParkingZone> findAllParkingZones(){
+    public List<ParkingZoneDto> findAllParkingZones(){
         return parkingZoneService.getParkingZones();
     }
 
@@ -32,14 +42,11 @@ public class ParkingZoneController {
         return parkingZoneService.getParkingZoneById(id);
     }
 
-    @GetMapping("/places-in-zone/{id}")
-    public List<ParkingPlace> showPlacesInParkingZone(@PathVariable Long id){
-        return parkingZoneService.getParkingPlacesByZoneId(id);
-    }
+
     @PostMapping("/create-zone/{parkingId}")
     public void createParkingZone(@RequestBody ParkingZone parkingZone, @PathVariable Long parkingId){
 
-        parkingZoneService.createParkingZone(parkingZone, parkingService.getParkingById(parkingId));
+        parkingZoneService.createParkingZone(parkingZone, parkingId);
     }
 
     @PutMapping("/update-zone/{id}")

@@ -1,5 +1,6 @@
 package com.example.parkinglot.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -12,9 +13,10 @@ import java.util.Set;
 public class Parking extends BaseEntity{
     @Column(name = "name", nullable = false)
     private String name;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "parking")
     private List<ParkingZone> zones;
+
     @Column(name = "city", nullable = false)
     private String city;
     @Column(name = "street", nullable = false)

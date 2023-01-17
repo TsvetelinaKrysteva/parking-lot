@@ -1,7 +1,9 @@
 package com.example.parkinglot.controller;
 
+import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.entity.Car;
 import com.example.parkinglot.model.entity.ParkingPlace;
+import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingPlaceService;
 import com.example.parkinglot.service.ParkingZoneService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +17,15 @@ public class ParkingPlaceController {
     ParkingPlaceService parkingPlaceService;
     @Autowired
     ParkingZoneService parkingZoneService;
+    @Autowired
+    CarService carService;
 
+    @GetMapping("/car-parking-place/{id}")
+    public ParkingPlace showParkingPlaceOfTheCar(@PathVariable Long id){
+        return carService.getParkingPlaceOfTheCar(id);
+    }
     @GetMapping("/places")
-    public List<ParkingPlace> findAllPlaces(){
+    public List<ParkingPlaceDto> findAllPlaces(){
         return parkingPlaceService.getParkingPlaces();
     }
 
@@ -26,16 +34,15 @@ public class ParkingPlaceController {
         return parkingPlaceService.getParkingPlaceById(id);
     }
 
-    @GetMapping("/car-on-place/{id}")
-    public Car showCarByParkingPlaceId(@PathVariable Long id){
-        return parkingPlaceService.getCarByPlaceId(id);
-        //TODO CHECK BEHAVIOUR IF PLACE IS EMPTY
+    @GetMapping("/places-in-zone/{id}")
+    public List<ParkingPlace> showPlacesInParkingZone(@PathVariable Long id){
+        return parkingZoneService.getParkingPlacesByZoneId(id);
     }
 
 
     @PostMapping("/create-place/{parkingZoneId}")
     public void createParkingPlace(@RequestBody ParkingPlace parkingPlace, @PathVariable Long parkingZoneId){
-        parkingPlaceService.createParkingPlace(parkingPlace, parkingZoneService.getParkingZoneById(parkingZoneId));
+        parkingPlaceService.createParkingPlace(parkingPlace, parkingZoneId);
     }
 
     @PutMapping("/update-place/{id}")

@@ -1,4 +1,4 @@
-package com.example.parkinglot.repository;
+package com.example.parkinglot.service.repository;
 
 import com.example.parkinglot.model.entity.ParkingPlace;
 import org.springframework.data.repository.CrudRepository;

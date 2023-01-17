@@ -11,19 +11,18 @@ public class ParkingPlace extends BaseEntity {
     @Column(name = "number")
     private int number;
 
-    @JsonBackReference
-    @ManyToOne
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "parking_zone_id", nullable = false)
     private ParkingZone parkingZone;
+
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     private Car car;
 
     public ParkingPlace() {
     }
 
-    public ParkingPlace(int number, Car car) {
+    public ParkingPlace(int number) {
         this.number = number;
-        this.car = car;
     }
 
     public ParkingPlace(int number, ParkingZone parkingZone, Car car) {
