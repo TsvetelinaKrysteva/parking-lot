@@ -8,6 +8,7 @@ import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingPlaceService;
 import com.example.parkinglot.service.ParkingService;
 import com.example.parkinglot.service.ParkingZoneService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,12 +26,12 @@ public class ParkingZoneController {
     ParkingService parkingService;
 
     @GetMapping("/zones-in-parking/{id}")
-    public List<ParkingZone> showZonesInParking(@PathVariable Long id) {
-        return parkingService.getZonesByParkingId(id);
+    public List<ParkingZoneDto> showZonesInParking(@PathVariable Long id) {
+        return parkingZoneService.getZonesByParkingId(id);
     }
     @GetMapping("/car-parking-zone/{id}")
     public ParkingZone showParkingZoneOfTheCar(@PathVariable Long id){
-        return carService.getParkingZoneOfTheCar(id);
+        return parkingZoneService.getZoneByCarId(id);
     }
     @GetMapping("/zones")
     public List<ParkingZoneDto> findAllParkingZones(){
@@ -38,13 +39,13 @@ public class ParkingZoneController {
     }
 
     @GetMapping("/zone/{id}")
-    public ParkingZone showParkingZoneById(@PathVariable Long id) {
+    public ParkingZoneDto showParkingZoneById(@PathVariable Long id) {
         return parkingZoneService.getParkingZoneById(id);
     }
 
 
     @PostMapping("/create-zone/{parkingId}")
-    public void createParkingZone(@RequestBody ParkingZone parkingZone, @PathVariable Long parkingId){
+    public void createParkingZone(@Valid @RequestBody ParkingZone parkingZone, @PathVariable Long parkingId){
 
         parkingZoneService.createParkingZone(parkingZone, parkingId);
     }
@@ -53,7 +54,7 @@ public class ParkingZoneController {
     public void updateParkingZone(@RequestBody ParkingZone parkingZone, @PathVariable Long id) {
 
         parkingZone.setId(id);
-        parkingZone.setParking(parkingZoneService.getParkingZoneById(id).getParking());
+        parkingZone.setParking(parkingZoneService.getZone(id).getParking());
         parkingZoneService.updateParkingZone(parkingZone);
 
 
@@ -62,7 +63,7 @@ public class ParkingZoneController {
     @DeleteMapping("/delete-zone/{id}")
     public void deleteParkingZone(@PathVariable Long id) {
 
-        parkingZoneService.getParkingZoneById(id).getParking().removeZone(parkingZoneService.getParkingZoneById(id));
+        parkingZoneService.getZone(id).getParking().removeZone(parkingZoneService.getZone(id));
         parkingZoneService.deleteParkingZone(id);
     }
 }

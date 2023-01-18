@@ -3,10 +3,12 @@ package com.example.parkinglot.model.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "cars")
 public class Car extends BaseEntity {
+    @NotNull
     @Column(unique = true)
     private String plateNumber;
 

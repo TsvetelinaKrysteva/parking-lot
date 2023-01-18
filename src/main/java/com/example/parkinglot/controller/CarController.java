@@ -7,6 +7,7 @@ import com.example.parkinglot.model.entity.ParkingPlace;
 import com.example.parkinglot.model.entity.ParkingZone;
 import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingPlaceService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +26,8 @@ public class CarController {
     }
 
     @GetMapping("/car-on-place/{id}")
-    public Car showCarByParkingPlaceId(@PathVariable Long id){
-        return parkingPlaceService.getCarByPlaceId(id);
+    public CarDto showCarByParkingPlaceId(@PathVariable Long id){
+        return carService.getCarByPlaceId(id);
     }
 
     @GetMapping("/car/{id}")
@@ -35,10 +36,13 @@ public class CarController {
     }
 
     @PostMapping("/create-car/{placeId}")
-    public void createCar(@RequestBody Car car, @PathVariable Long placeId){
-        if(parkingPlaceService.getCarByPlaceId(placeId) == null){
-            car.setParkingPlace(parkingPlaceService.getParkingPlaceById(placeId));
+    public void createCar(@Valid @RequestBody Car car, @PathVariable Long placeId){
+        if(parkingPlaceService.getPlace(placeId).getCar() == null){
+            car.setParkingPlace(parkingPlaceService.getPlace(placeId));
             carService.createCar(car);
+
+        } else {
+            throw new RuntimeException("The place is already taken!");
         }
     }
 

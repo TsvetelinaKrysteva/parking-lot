@@ -3,7 +3,9 @@ package com.example.parkinglot.model.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
+import java.lang.annotation.Repeatable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -11,16 +13,24 @@ import java.util.Set;
 @Entity
 @Table(name = "parkings")
 public class Parking extends BaseEntity{
-    @Column(name = "name", nullable = false)
+    @NotNull
+    @Column(name = "name")
+//            , nullable = false)
     private String name;
+
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "parking")
     private List<ParkingZone> zones;
 
+    @NotNull
     @Column(name = "city", nullable = false)
     private String city;
+
+    @NotNull
     @Column(name = "street", nullable = false)
     private String street;
+
+
     @Column(name = "zip_code", length = 5)
     private String zipCode;
 

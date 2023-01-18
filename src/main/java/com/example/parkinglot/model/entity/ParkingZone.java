@@ -12,19 +12,19 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
-
-
+import jakarta.validation.constraints.NotNull;
 
 
 @Entity
 @Table(name = "parking_zones")
 public class ParkingZone extends BaseEntity{
+    @NotNull
     @Column(name = "name")
     private String name;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "parking_id")
+    @JsonIgnore
     private Parking parking;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "parkingZone")

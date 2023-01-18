@@ -7,6 +7,7 @@ import com.example.parkinglot.model.entity.ParkingZone;
 import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingService;
 import com.example.parkinglot.service.ParkingZoneService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,17 +29,17 @@ public class ParkingController {
 
     @GetMapping("/car-parking/{id}")
     public Parking showParkingOfTheCar(@PathVariable Long id){
-        return carService.getParkingOfTheCar(id);
+        return parkingService.getParkingByCarId(id);
     }
 
     @GetMapping("/parking/{id}")
-    public Parking showParkingById(@PathVariable Long id) {
+    public ParkingDto showParkingById(@PathVariable Long id) {
         return parkingService.getParkingById(id);
     }
 
 
     @PostMapping("/create-parking")
-    public void createParking(@RequestBody Parking parking) {
+    public void createParking(@Valid @RequestBody Parking parking) {
         parkingService.createParking(parking);
     }
 

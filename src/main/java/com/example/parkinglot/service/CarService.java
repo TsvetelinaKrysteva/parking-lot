@@ -6,7 +6,6 @@ import com.example.parkinglot.model.entity.Parking;
 import com.example.parkinglot.model.entity.ParkingPlace;
 import com.example.parkinglot.model.entity.ParkingZone;
 import com.example.parkinglot.service.repository.CarRepository;
-import com.example.parkinglot.service.repository.ParkingPlaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,25 +27,21 @@ public class CarService {
     }
 
     public Car getCar(Long id){
-        return carRepository.findById(id).orElseThrow(() -> new RuntimeException("Not found"));
+        return carRepository.findById(id).orElseThrow(() -> new RuntimeException("This car doesn't exist in the parking lot!"));
     }
     public CarDto getCarById(Long id){
         Car car = getCar(id);
         return this.convertToDto(car);
     }
 
-    public ParkingPlace getParkingPlaceOfTheCar(Long id){
-        return getCar(id).getParkingPlace();
+    public CarDto getCarByPlaceId(Long id){
+        return convertToDto(carRepository.findByParkingPlaceId(id).orElseThrow( () -> new RuntimeException("This place is empty!")));
     }
 
-    public ParkingZone getParkingZoneOfTheCar(Long id){
-        return getParkingPlaceOfTheCar(id).getParkingZone();
-    }
-
-    public Parking getParkingOfTheCar(Long id){
-        return getParkingZoneOfTheCar(id).getParking();
-    }
     public void createCar(Car car){
+        if (carRepository.findByPlateNumber(car.getPlateNumber()).isPresent()){
+            throw new RuntimeException("Cars with same plate numbers can't exist!");
+        }
         car.getParkingPlace().setCar(car);
         carRepository.save(car);
 

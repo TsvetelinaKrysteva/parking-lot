@@ -1,14 +1,18 @@
 package com.example.parkinglot.service;
 
 import com.example.parkinglot.model.dto.ParkingDto;
+import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingZoneDto;
 import com.example.parkinglot.model.entity.Parking;
 import com.example.parkinglot.model.entity.ParkingPlace;
 import com.example.parkinglot.model.entity.ParkingZone;
+import com.example.parkinglot.service.repository.ParkingPlaceRepository;
+import com.example.parkinglot.service.repository.ParkingRepository;
 import com.example.parkinglot.service.repository.ParkingZoneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +21,9 @@ public class ParkingZoneService {
     @Autowired
     ParkingZoneRepository parkingZoneRepository;
     @Autowired
-    ParkingService parkingService;
+    ParkingRepository parkingRepository;
+    @Autowired
+    ParkingPlaceRepository parkingPlaceRepository;
 
 
     public List<ParkingZoneDto> getParkingZones() {
@@ -27,16 +33,26 @@ public class ParkingZoneService {
                 .collect(Collectors.toList());
     }
 
-    public ParkingZone getParkingZoneById(Long id) {
-        return parkingZoneRepository.findById(id).orElseThrow(() -> new RuntimeException("Not found"));
+    public ParkingZone getZone(Long id){
+        return parkingZoneRepository.findById(id).orElseThrow(() -> new RuntimeException("Such zone doesn't exist!"));
+    }
+    public ParkingZoneDto getParkingZoneById(Long id) {
+        return convertToDto(parkingZoneRepository.findById(id).orElseThrow(() -> new RuntimeException("Such zone doesn't exist!")));
+    }
+    public List<ParkingZoneDto> getZonesByParkingId(Long id){
+        return (List<ParkingZoneDto>) convertToDto(parkingZoneRepository.findByParkingId(id).orElseThrow( () -> new RuntimeException("Not found")));
     }
 
-    public List<ParkingPlace> getParkingPlacesByZoneId(Long id) {
-        return getParkingZoneById(id).getParkingPlaces();
-    }
+   public ParkingZone getZoneByCarId(Long id){
+       ParkingPlace parkingPlace = parkingPlaceRepository.findByCarId(id).orElseThrow( () -> new RuntimeException("Such place doesn't exist!"));
+       return parkingZoneRepository.findByParkingPlacesId(parkingPlace.getId()).orElseThrow( () -> new RuntimeException("Such zone doesn't exist!"));
+   }
 
     public void createParkingZone(ParkingZone parkingZone, Long parkingId) {
-        Parking parking = parkingService.getParkingById(parkingId);
+        Parking parking = parkingRepository.findById(parkingId).orElseThrow( () -> new RuntimeException("Such parking doesn't exist!"));
+        if (parkingZoneRepository.findByName(parkingZone.getName()).isPresent()){
+            throw new RuntimeException("Zones with the same name can't exist!");
+        }
         parking.addNewZone(parkingZone);
         parkingZone.setParking(parking);
         parkingZoneRepository.save(parkingZone);
