@@ -2,11 +2,10 @@ package com.example.parkinglot.controller;
 
 import com.example.parkinglot.model.dto.ParkingDto;
 import com.example.parkinglot.model.entity.Parking;
-import com.example.parkinglot.model.entity.ParkingPlace;
-import com.example.parkinglot.model.entity.ParkingZone;
+
 import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingService;
-import com.example.parkinglot.service.ParkingZoneService;
+
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

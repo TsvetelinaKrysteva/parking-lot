@@ -2,9 +2,7 @@ package com.example.parkinglot.controller;
 
 import com.example.parkinglot.model.dto.CarDto;
 import com.example.parkinglot.model.entity.Car;
-import com.example.parkinglot.model.entity.Parking;
-import com.example.parkinglot.model.entity.ParkingPlace;
-import com.example.parkinglot.model.entity.ParkingZone;
+
 import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingPlaceService;
 import jakarta.validation.Valid;

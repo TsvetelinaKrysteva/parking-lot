@@ -1,7 +1,7 @@
 package com.example.parkinglot.controller;
 
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
-import com.example.parkinglot.model.entity.Car;
+
 import com.example.parkinglot.model.entity.ParkingPlace;
 import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingPlaceService;
