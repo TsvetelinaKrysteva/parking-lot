@@ -7,7 +7,8 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ParkingRepository extends CrudRepository<Parking, Long> {
+public interface ParkingRepository extends CrudRepository<Parking, Long>, ParkingRepositoryCustom {
     Optional<Parking> findByZonesId(Long zonesId);
     Optional<Parking> findByName(String name);
+
 }

@@ -1,6 +1,7 @@
 package com.example.parkinglot.controller;
 
 import com.example.parkinglot.model.dto.CarDto;
+import com.example.parkinglot.model.dto.CarFilterDto;
 import com.example.parkinglot.model.entity.Car;
 
 import com.example.parkinglot.service.CarService;
@@ -42,6 +43,11 @@ public class CarController {
         } else {
             throw new RuntimeException("The place is already taken!");
         }
+    }
+
+    @PostMapping("/car/filter")
+    public List<CarDto> filter(@RequestBody CarFilterDto carFilterDto){
+        return carService.findByFilter(carFilterDto);
     }
 
     @PutMapping("/update-car/{id}")

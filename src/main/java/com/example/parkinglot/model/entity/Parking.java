@@ -1,14 +1,12 @@
 package com.example.parkinglot.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
-import java.lang.annotation.Repeatable;
-import java.util.ArrayList;
+
 import java.util.List;
-import java.util.Set;
+
 
 @Entity
 @Table(name = "parkings")

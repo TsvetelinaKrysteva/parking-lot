@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ParkingPlaceRepository extends CrudRepository<ParkingPlace, Long> {
+public interface ParkingPlaceRepository extends CrudRepository<ParkingPlace, Long>, ParkingPLaceRepositoryCustom{
 
     Optional<ParkingPlace> findByCarId(Long carId);
     List<ParkingPlace> findByParkingZoneId(Long parkingZoneId);

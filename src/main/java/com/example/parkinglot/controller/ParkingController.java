@@ -1,6 +1,7 @@
 package com.example.parkinglot.controller;
 
 import com.example.parkinglot.model.dto.ParkingDto;
+import com.example.parkinglot.model.dto.ParkingFilterDto;
 import com.example.parkinglot.model.entity.Parking;
 
 import com.example.parkinglot.service.CarService;
@@ -47,6 +48,11 @@ public class ParkingController {
 
         parking.setId(id);
         parkingService.updateParking(parking);
+
+    }
+    @PostMapping("/parking/filter")
+    public  List<ParkingDto> filter(@RequestBody ParkingFilterDto filterDto){
+        return  parkingService.findByFilter(filterDto);
 
     }
 

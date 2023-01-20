@@ -3,6 +3,7 @@ package com.example.parkinglot.service;
 import com.example.parkinglot.model.dto.ParkingDto;
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingZoneDto;
+import com.example.parkinglot.model.dto.ParkingZoneFilterDto;
 import com.example.parkinglot.model.entity.Parking;
 import com.example.parkinglot.model.entity.ParkingPlace;
 import com.example.parkinglot.model.entity.ParkingZone;
@@ -26,6 +27,12 @@ public class ParkingZoneService {
     ParkingPlaceRepository parkingPlaceRepository;
 
 
+    public List<ParkingZoneDto> filter(ParkingZoneFilterDto parkingZoneFilterDto){
+        return parkingZoneRepository.findByFilter(parkingZoneFilterDto)
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
     public List<ParkingZoneDto> getParkingZones() {
         return ((List<ParkingZone>) parkingZoneRepository.findAll())
                 .stream()
@@ -71,6 +78,7 @@ public class ParkingZoneService {
 
     public ParkingZoneDto convertToDto(ParkingZone parkingZone){
         return new ParkingZoneDto(parkingZone.getName(), parkingZone.getParkingPlaces(), parkingZone.getId());
+
     }
 
 }

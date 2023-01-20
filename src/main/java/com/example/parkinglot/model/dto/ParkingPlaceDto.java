@@ -1,12 +1,5 @@
 package com.example.parkinglot.model.dto;
 
-import com.example.parkinglot.model.entity.Car;
-import com.example.parkinglot.model.entity.ParkingZone;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 
 public class ParkingPlaceDto {
 

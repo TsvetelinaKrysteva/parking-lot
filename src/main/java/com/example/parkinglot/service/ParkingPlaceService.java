@@ -1,6 +1,8 @@
 package com.example.parkinglot.service;
 
+import com.example.parkinglot.model.dto.ParkingFilterDto;
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
+import com.example.parkinglot.model.dto.ParkingPlaceFilterDto;
 import com.example.parkinglot.model.dto.ParkingZoneDto;
 import com.example.parkinglot.model.entity.ParkingPlace;
 import com.example.parkinglot.model.entity.ParkingZone;
@@ -19,6 +21,13 @@ public class ParkingPlaceService {
     @Autowired
     ParkingZoneService parkingZoneService;
 
+
+    public List<ParkingPlaceDto> findByFilter(ParkingPlaceFilterDto parkingPlaceFilterDto){
+        return parkingPlaceRepository.findByFilter(parkingPlaceFilterDto)
+                .stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
     public ParkingPlace getPlace(long id){
         return parkingPlaceRepository.findById(id).orElseThrow(() -> new RuntimeException("Invalid place!"));
     }

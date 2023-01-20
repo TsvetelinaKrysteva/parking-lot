@@ -2,6 +2,7 @@ package com.example.parkinglot.controller;
 
 
 import com.example.parkinglot.model.dto.ParkingZoneDto;
+import com.example.parkinglot.model.dto.ParkingZoneFilterDto;
 import com.example.parkinglot.model.entity.ParkingZone;
 import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingService;
@@ -46,6 +47,11 @@ public class ParkingZoneController {
     public void createParkingZone(@Valid @RequestBody ParkingZone parkingZone, @PathVariable Long parkingId){
 
         parkingZoneService.createParkingZone(parkingZone, parkingId);
+    }
+
+    @PostMapping("/zone/filter")
+    public  List<ParkingZoneDto> filter (@RequestBody ParkingZoneFilterDto parkingZoneFilterDto){
+        return parkingZoneService.filter(parkingZoneFilterDto);
     }
 
     @PutMapping("/update-zone/{id}")

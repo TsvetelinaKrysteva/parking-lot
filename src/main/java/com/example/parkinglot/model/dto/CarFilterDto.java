@@ -1,26 +1,18 @@
 package com.example.parkinglot.model.dto;
 
-
-public class CarDto {
-
+public class CarFilterDto {
 
     private Long id;
     private String plateNumber;
     private int parkingPlaceNumber;
     private String parkingZoneName;
 
-
-
-    public CarDto() {
+    public Long getId() {
+        return id;
     }
 
-    public CarDto(String plateNumber, int parkingPlaceNumber, String parkingZoneName, Long id) {
+    public void setId(Long id) {
         this.id = id;
-        this.plateNumber = plateNumber;
-        this.parkingPlaceNumber = parkingPlaceNumber;
-        this.parkingZoneName = parkingZoneName;
-
-//        this.parkingPlaceNum = parkingPlace;
     }
 
     public String getPlateNumber() {
@@ -46,13 +38,4 @@ public class CarDto {
     public void setParkingZoneName(String parkingZoneName) {
         this.parkingZoneName = parkingZoneName;
     }
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-
 }

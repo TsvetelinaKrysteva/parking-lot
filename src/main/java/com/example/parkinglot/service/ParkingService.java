@@ -1,11 +1,12 @@
 package com.example.parkinglot.service;
 
 import com.example.parkinglot.model.dto.ParkingDto;
-import com.example.parkinglot.model.dto.ParkingSecondDto;
+
+import com.example.parkinglot.model.dto.ParkingFilterDto;
 import com.example.parkinglot.model.entity.Parking;
 
 import com.example.parkinglot.model.entity.ParkingPlace;
-import com.example.parkinglot.model.entity.ParkingZone;
+
 import com.example.parkinglot.service.repository.ParkingPlaceRepository;
 import com.example.parkinglot.service.repository.ParkingRepository;
 import com.example.parkinglot.service.repository.ParkingZoneRepository;
@@ -20,16 +21,19 @@ import java.util.stream.Collectors;
 public class ParkingService {
     @Autowired
     ParkingRepository parkingRepository;
-    @Autowired
-    ParkingZoneService parkingZoneService;
+
     @Autowired
     ParkingPlaceRepository parkingPlaceRepository;
-    @Autowired
-    ParkingZoneRepository parkingZoneRepository;
+
+    public List<ParkingDto> findByFilter(ParkingFilterDto filterDto){
+        return parkingRepository.findByFilter(filterDto)
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
 
     @Transactional
     public List<ParkingDto> getParkings(){
-
         return ((List<Parking>) parkingRepository.findAll())
                 .stream()
                 .map(this::convertToDTO)

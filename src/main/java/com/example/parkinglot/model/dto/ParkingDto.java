@@ -1,12 +1,5 @@
 package com.example.parkinglot.model.dto;
 
-import com.example.parkinglot.model.entity.ParkingZone;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.OneToMany;
-
-import java.util.List;
 
 public class ParkingDto {
     private Long id;

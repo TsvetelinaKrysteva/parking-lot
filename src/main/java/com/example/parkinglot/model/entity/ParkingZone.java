@@ -2,7 +2,6 @@ package com.example.parkinglot.model.entity;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,7 +23,7 @@ public class ParkingZone extends BaseEntity{
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "parking_id")
-    @JsonIgnore
+//    @JsonIgnore
     private Parking parking;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "parkingZone")
