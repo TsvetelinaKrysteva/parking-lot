@@ -55,8 +55,9 @@ public class ParkingZoneService {
        return parkingZoneRepository.findByParkingPlacesId(parkingPlace.getId()).orElseThrow( () -> new RuntimeException("Such zone doesn't exist!"));
    }
 
-    public void createParkingZone(ParkingZone parkingZone, Long parkingId) {
+    public void createParkingZone(ParkingZoneDto parkingZoneDto, Long parkingId) {
         Parking parking = parkingRepository.findById(parkingId).orElseThrow( () -> new RuntimeException("Such parking doesn't exist!"));
+        ParkingZone parkingZone = convertToParkingZone(parkingZoneDto);
         if (parkingZoneRepository.findByName(parkingZone.getName()).isPresent()){
             throw new RuntimeException("Zones with the same name can't exist!");
         }
@@ -65,8 +66,9 @@ public class ParkingZoneService {
         parkingZoneRepository.save(parkingZone);
     }
 
-    public void updateParkingZone(ParkingZone parkingZone) {
-
+    public void updateParkingZone(ParkingZoneDto parkingZoneDto, Long parkingZoneDtoId) {
+        parkingZoneDto.setId(parkingZoneDtoId);
+        ParkingZone parkingZone = convertToParkingZone(parkingZoneDto);
         parkingZoneRepository.save(parkingZone);
 
     }
@@ -79,6 +81,18 @@ public class ParkingZoneService {
     public ParkingZoneDto convertToDto(ParkingZone parkingZone){
         return new ParkingZoneDto(parkingZone.getName(), parkingZone.getParkingPlaces(), parkingZone.getId());
 
+    }
+
+    public ParkingZone convertToParkingZone(ParkingZoneDto parkingZoneDto){
+        ParkingZone parkingZone;
+        if(parkingZoneDto.getId() != null){
+            parkingZone = parkingZoneRepository.findById(parkingZoneDto.getId()).orElseThrow();
+        }else{
+            parkingZone = new ParkingZone();
+        }
+
+        parkingZone.setName(parkingZoneDto.getName());
+        return parkingZone;
     }
 
 }

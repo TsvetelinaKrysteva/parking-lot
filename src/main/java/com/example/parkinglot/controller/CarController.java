@@ -2,7 +2,6 @@ package com.example.parkinglot.controller;
 
 import com.example.parkinglot.model.dto.CarDto;
 import com.example.parkinglot.model.dto.CarFilterDto;
-import com.example.parkinglot.model.entity.Car;
 
 import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingPlaceService;
@@ -35,14 +34,8 @@ public class CarController {
     }
 
     @PostMapping("/create-car/{placeId}")
-    public void createCar(@Valid @RequestBody Car car, @PathVariable Long placeId){
-        if(parkingPlaceService.getPlace(placeId).getCar() == null){
-            car.setParkingPlace(parkingPlaceService.getPlace(placeId));
-            carService.createCar(car);
-
-        } else {
-            throw new RuntimeException("The place is already taken!");
-        }
+    public void createCar(@Valid @RequestBody CarDto carDto, @PathVariable Long placeId){
+        carService.createCar(carDto, placeId);
     }
 
     @PostMapping("/car/filter")
@@ -51,11 +44,11 @@ public class CarController {
     }
 
     @PutMapping("/update-car/{id}")
-    public void updateCar(@RequestBody Car car, @PathVariable Long id) {
-        car.setId(id);
-        car.setParkingPlace(carService.getCar(id).getParkingPlace());
-//                getCarById(id).getParkingPlace());
-        carService.updateCar(car);
+    public void updateCar(@RequestBody CarDto carDto, @PathVariable Long id) {
+
+//        car.setParkingPlace(carService.getCar(id).getParkingPlace());
+////                getCarById(id).getParkingPlace());
+        carService.updateCar(carDto, id);
     }
 
     @DeleteMapping("/delete-car/{id}")

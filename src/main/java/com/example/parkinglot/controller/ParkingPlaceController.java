@@ -43,8 +43,8 @@ public class ParkingPlaceController {
 
 
     @PostMapping("/create-place/{parkingZoneId}")
-    public void createParkingPlace(@Valid @RequestBody ParkingPlace parkingPlace, @PathVariable Long parkingZoneId){
-        parkingPlaceService.createParkingPlace(parkingPlace, parkingZoneId);
+    public void createParkingPlace(@Valid @RequestBody ParkingPlaceDto parkingPlaceDto, @PathVariable Long parkingZoneId){
+        parkingPlaceService.createParkingPlace(parkingPlaceDto, parkingZoneId);
     }
 
     @PostMapping("/place/filter")
@@ -53,11 +53,11 @@ public class ParkingPlaceController {
     }
 
     @PutMapping("/update-place/{id}")
-    public void updatePlace(@RequestBody ParkingPlace parkingPlace, @PathVariable Long id) {
-        parkingPlace.setId(id);
-        parkingPlace.setParkingZone(parkingPlaceService.getPlace(id).getParkingZone());
+    public void updatePlace(@RequestBody ParkingPlaceDto parkingPlaceDto, @PathVariable Long id) {
 
-        parkingPlaceService.updateParkingPlace(parkingPlace);
+//        parkingPlaceDto.setParkingZone(parkingPlaceService.getPlace(id).getParkingZone());
+
+        parkingPlaceService.updateParkingPlace(parkingPlaceDto, id);
     }
 
     @DeleteMapping("/delete-place/{id}")

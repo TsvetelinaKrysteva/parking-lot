@@ -44,9 +44,9 @@ public class ParkingZoneController {
 
 
     @PostMapping("/create-zone/{parkingId}")
-    public void createParkingZone(@Valid @RequestBody ParkingZone parkingZone, @PathVariable Long parkingId){
+    public void createParkingZone(@Valid @RequestBody ParkingZoneDto parkingZoneDto, @PathVariable Long parkingId){
 
-        parkingZoneService.createParkingZone(parkingZone, parkingId);
+        parkingZoneService.createParkingZone(parkingZoneDto, parkingId);
     }
 
     @PostMapping("/zone/filter")
@@ -55,11 +55,11 @@ public class ParkingZoneController {
     }
 
     @PutMapping("/update-zone/{id}")
-    public void updateParkingZone(@RequestBody ParkingZone parkingZone, @PathVariable Long id) {
-
-        parkingZone.setId(id);
-        parkingZone.setParking(parkingZoneService.getZone(id).getParking());
-        parkingZoneService.updateParkingZone(parkingZone);
+    public void updateParkingZone(@RequestBody ParkingZoneDto parkingZoneDto, @PathVariable Long id) {
+//
+//        parkingZone.setId(id);
+//        parkingZone.setParking(parkingZoneService.getZone(id).getParking());
+        parkingZoneService.updateParkingZone(parkingZoneDto, id);
 
 
     }

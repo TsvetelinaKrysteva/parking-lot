@@ -39,15 +39,13 @@ public class ParkingController {
 
 
     @PostMapping("/create-parking")
-    public void createParking(@Valid @RequestBody Parking parking) {
-        parkingService.createParking(parking);
+    public void createParking(@Valid @RequestBody ParkingDto parkingDto) {
+        parkingService.createParking(parkingDto);
     }
 
     @PutMapping("/update-parking/{id}")
-    public void updateParking(@RequestBody Parking parking, @PathVariable Long id) {
-
-        parking.setId(id);
-        parkingService.updateParking(parking);
+    public void updateParking(@RequestBody ParkingDto parkingDto, @PathVariable Long id) {
+        parkingService.updateParking(parkingDto, id);
 
     }
     @PostMapping("/parking/filter")

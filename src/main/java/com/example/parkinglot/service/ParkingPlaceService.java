@@ -1,9 +1,10 @@
 package com.example.parkinglot.service;
 
-import com.example.parkinglot.model.dto.ParkingFilterDto;
+
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingPlaceFilterDto;
 import com.example.parkinglot.model.dto.ParkingZoneDto;
+
 import com.example.parkinglot.model.entity.ParkingPlace;
 import com.example.parkinglot.model.entity.ParkingZone;
 import com.example.parkinglot.service.repository.ParkingPlaceRepository;
@@ -53,14 +54,16 @@ public class ParkingPlaceService {
     }
 
 
-    public void createParkingPlace(ParkingPlace parkingPlace, Long parkingZoneId){
+    public void createParkingPlace(ParkingPlaceDto parkingPlaceDto, Long parkingZoneId){
+        ParkingPlace parkingPlace = convertToParkingPlace(parkingPlaceDto);
         ParkingZone parkingZone = parkingZoneService.getZone(parkingZoneId);
         parkingZone.addNewPlace(parkingPlace);
         parkingPlace.setParkingZone(parkingZone);
         parkingPlaceRepository.save(parkingPlace);
     }
-    public void updateParkingPlace(ParkingPlace parkingPlace){
-
+    public void updateParkingPlace(ParkingPlaceDto parkingPlaceDto, Long parkingPlaceDtoId){
+        parkingPlaceDto.setId(parkingPlaceDtoId);
+        ParkingPlace parkingPlace = convertToParkingPlace(parkingPlaceDto);
         parkingPlaceRepository.save(parkingPlace);
     }
 
@@ -73,6 +76,19 @@ public class ParkingPlaceService {
         ParkingZone parkingZone = parkingPLace.getParkingZone();
         ParkingZoneDto parkingZoneDto = new ParkingZoneDto(parkingZone.getName(), parkingZone.getParkingPlaces(), parkingZone.getId());
         return new ParkingPlaceDto(parkingPLace.getNumber(), parkingZoneDto, parkingPLace.getId());
+    }
+
+    public ParkingPlace convertToParkingPlace(ParkingPlaceDto parkingPlaceDto){
+        ParkingPlace parkingPlace;
+        if (parkingPlaceDto.getId() != null){
+            parkingPlace = parkingPlaceRepository.findById(parkingPlaceDto.getId()).orElseThrow();
+        }
+        else{
+            parkingPlace = new ParkingPlace();
+        }
+        parkingPlace.setNumber(parkingPlaceDto.getNumber());
+        return parkingPlace;
+
     }
 
 }

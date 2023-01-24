@@ -3,6 +3,7 @@ package com.example.parkinglot.service;
 import com.example.parkinglot.model.dto.ParkingDto;
 
 import com.example.parkinglot.model.dto.ParkingFilterDto;
+import com.example.parkinglot.model.dto.ParkingZoneDto;
 import com.example.parkinglot.model.entity.Parking;
 
 import com.example.parkinglot.model.entity.ParkingPlace;
@@ -51,15 +52,17 @@ public class ParkingService {
         return parkingRepository.findByZonesId(parkingPlace.getParkingZone().getId()).orElseThrow(() -> new RuntimeException("Parking doesn't exist!"));
     }
 
-    public void createParking(Parking parking){
-
+    public void createParking(ParkingDto parkingDto){
+        Parking parking = convertToParking(parkingDto);
         if (parkingRepository.findByName(parking.getName()).isPresent()){
             throw new RuntimeException("Parkings with the same name can't exist!");
         }
         parkingRepository.save(parking);
     }
 
-    public void updateParking(Parking parking){
+    public void updateParking(ParkingDto parkingdto, Long parkingDtoId){
+        parkingdto.setId(parkingDtoId);
+        Parking parking = convertToParking(parkingdto);
         parkingRepository.save(parking);
     }
 
@@ -69,6 +72,20 @@ public class ParkingService {
 
     public ParkingDto convertToDTO(Parking parking){
         return new ParkingDto(parking.getName(), parking.getCity(), parking.getStreet(), parking.getZipCode(), parking.getId());
+    }
+
+    public Parking convertToParking(ParkingDto parkingDto){
+        Parking parking;
+        if (parkingDto.getId() != null){
+            parking = parkingRepository.findById(parkingDto.getId()).orElseThrow();
+        }else{
+            parking = new Parking();
+        }
+        parking.setName(parkingDto.getName());
+        parking.setCity(parkingDto.getCity());
+        parking.setStreet(parkingDto.getStreet());
+        parking.setZipCode(parkingDto.getZipCode());
+        return parking;
     }
 
 }

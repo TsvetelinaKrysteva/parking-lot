@@ -11,10 +11,6 @@ import com.example.parkinglot.service.repository.CarRepository;
 import com.example.parkinglot.service.repository.ParkingPlaceRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
@@ -82,17 +78,24 @@ public class CarService {
         return convertToDto(carRepository.findByParkingPlaceId(id).orElseThrow( () -> new RuntimeException("This place is empty!")));
     }
 
-    public void createCar(Car car){
-        if (carRepository.findByPlateNumber(car.getPlateNumber()).isPresent()){
+    public void createCar(CarDto carDto, Long id){
+        ParkingPlace parkingPlace = parkingPlaceRepository.findById(id).orElseThrow();
+        Car car = convertToCar(carDto);
+        if (carRepository.findByPlateNumber(carDto.getPlateNumber()).isPresent()){
             throw new RuntimeException("Cars with same plate numbers can't exist!");
         }
-        car.getParkingPlace().setCar(car);
+        if(parkingPlace.getCar() != null){
+            throw new RuntimeException("The place is already taken!");
+        }
+        car.setParkingPlace(parkingPlace);
         carRepository.save(car);
-
-
+        // TODO: 24.1.2023 г. parking place doesn't set the car; multiple cars reference to one place
+        parkingPlace.setCar(car);
     }
-    public void updateCar(Car car){
 
+    public void updateCar(CarDto carDto, Long carDtoId){
+        carDto.setId(carDtoId);
+        Car car = convertToCar(carDto);
         carRepository.save(car);
     }
 
@@ -104,6 +107,18 @@ public class CarService {
     public CarDto convertToDto(Car car){
         ParkingPlace parkingPlace = car.getParkingPlace();
         return new CarDto(car.getPlateNumber(), parkingPlace.getNumber(), parkingPlace.getParkingZone().getName(), car.getId());
+    }
+
+    public Car convertToCar(CarDto carDto){
+        Car car;
+        if(carDto.getId() != null){
+            car = carRepository.findById(carDto.getId()).orElseThrow();
+        } else{
+            car = new Car ();
+        }
+        car.setPlateNumber(carDto.getPlateNumber());
+        return car;
+
     }
 
 
