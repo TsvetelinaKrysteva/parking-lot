@@ -14,13 +14,24 @@ public class ParkingZoneDto {
     private String name;
     private List<Integer> placeNames;
 
+    public ParkingDto getParkingDto() {
+        return parkingDto;
+    }
+
+    public void setParkingDto(ParkingDto parkingDto) {
+        this.parkingDto = parkingDto;
+    }
+
+    private ParkingDto parkingDto;
+
     public ParkingZoneDto() {
     }
 
-    public ParkingZoneDto(String name, List<ParkingPlace> parkingPlaces, Long id) {
+    public ParkingZoneDto(String name, List<ParkingPlace> parkingPlaces, Long id, ParkingDto parkingDto) {
         this.id = id;
         this.name = name;
         this.placeNames = parkingPlaces.stream().map(ParkingPlace::getNumber).collect(Collectors.toList());
+        this.parkingDto = parkingDto;
     }
 
     public String getName() {

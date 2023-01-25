@@ -1,29 +1,21 @@
 package com.example.parkinglot.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.example.parkinglot.model.dto.CarDto;
 import com.example.parkinglot.model.dto.CarFilterDto;
 import com.example.parkinglot.model.entity.Car;
-
 import com.example.parkinglot.model.entity.ParkingPlace;
-
 import com.example.parkinglot.service.repository.CarRepository;
-
 import com.example.parkinglot.service.repository.ParkingPlaceRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.stereotype.Service;
-
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CarService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
 
     @Autowired
     CarRepository carRepository;

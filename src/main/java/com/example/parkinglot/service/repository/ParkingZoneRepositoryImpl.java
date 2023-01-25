@@ -1,19 +1,21 @@
 package com.example.parkinglot.service.repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import com.example.parkinglot.model.dto.ParkingZoneFilterDto;
 import com.example.parkinglot.model.entity.Parking;
 import com.example.parkinglot.model.entity.ParkingZone;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ParkingZoneRepositoryImpl implements ParkingZoneRepositoryCustom{
     @PersistenceContext
@@ -25,7 +27,7 @@ public class ParkingZoneRepositoryImpl implements ParkingZoneRepositoryCustom{
         CriteriaQuery<ParkingZone> criteria = criteriaBuilder.createQuery(ParkingZone.class);
         Root<ParkingZone> root = criteria.from(ParkingZone.class);
         List<Predicate> predicates = new ArrayList<>();
-
+        Fetch<ParkingZone, Parking> parkingFetch = root.fetch("parking");
         if(filter.getParkingName() != null){
             Join<ParkingZone, Parking> parkingJoin = root.join("parking");
             predicates.add(criteriaBuilder.equal(parkingJoin.get("name"), filter.getParkingName()));

@@ -1,11 +1,14 @@
 package com.example.parkinglot.model.entity;
 
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-
-
 import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 
 @Entity
@@ -83,6 +86,7 @@ public class Parking extends BaseEntity{
     public void setZipCode(String zipCode) {
         this.zipCode = zipCode;
     }
+
     public void addNewZone(ParkingZone parkingZone){
         List<ParkingZone> pZones = this.getZones();
         pZones.add(parkingZone);

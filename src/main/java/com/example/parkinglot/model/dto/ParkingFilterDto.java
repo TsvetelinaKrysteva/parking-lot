@@ -1,10 +1,7 @@
 package com.example.parkinglot.model.dto;
 
-import com.example.parkinglot.model.entity.ParkingZone;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.NotNull;
+
+
 
 import java.util.List;
 

@@ -1,22 +1,19 @@
 package com.example.parkinglot.service;
 
-import com.example.parkinglot.model.dto.ParkingDto;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import com.example.parkinglot.model.dto.ParkingFilterDto;
-import com.example.parkinglot.model.dto.ParkingZoneDto;
-import com.example.parkinglot.model.entity.Parking;
+import javax.transaction.Transactional;
 
-import com.example.parkinglot.model.entity.ParkingPlace;
-
-import com.example.parkinglot.service.repository.ParkingPlaceRepository;
-import com.example.parkinglot.service.repository.ParkingRepository;
-import com.example.parkinglot.service.repository.ParkingZoneRepository;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import com.example.parkinglot.model.dto.ParkingDto;
+import com.example.parkinglot.model.dto.ParkingFilterDto;
+import com.example.parkinglot.model.entity.Parking;
+import com.example.parkinglot.model.entity.ParkingPlace;
+import com.example.parkinglot.service.repository.ParkingPlaceRepository;
+import com.example.parkinglot.service.repository.ParkingRepository;
 
 @Service
 public class ParkingService {

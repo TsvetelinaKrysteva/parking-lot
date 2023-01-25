@@ -13,6 +13,7 @@ import com.example.parkinglot.service.repository.ParkingZoneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +34,8 @@ public class ParkingZoneService {
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
+
+
     public List<ParkingZoneDto> getParkingZones() {
         return ((List<ParkingZone>) parkingZoneRepository.findAll())
                 .stream()
@@ -55,6 +58,7 @@ public class ParkingZoneService {
        return parkingZoneRepository.findByParkingPlacesId(parkingPlace.getId()).orElseThrow( () -> new RuntimeException("Such zone doesn't exist!"));
    }
 
+    @Transactional
     public void createParkingZone(ParkingZoneDto parkingZoneDto, Long parkingId) {
         Parking parking = parkingRepository.findById(parkingId).orElseThrow( () -> new RuntimeException("Such parking doesn't exist!"));
         ParkingZone parkingZone = convertToParkingZone(parkingZoneDto);
@@ -79,7 +83,9 @@ public class ParkingZoneService {
     }
 
     public ParkingZoneDto convertToDto(ParkingZone parkingZone){
-        return new ParkingZoneDto(parkingZone.getName(), parkingZone.getParkingPlaces(), parkingZone.getId());
+        Parking parking = parkingZone.getParking();
+        ParkingDto parkingDto = new ParkingDto(parking.getName(), parking.getCity(), parking.getStreet(), parking.getZipCode(), parking.getId());
+        return new ParkingZoneDto(parkingZone.getName(), parkingZone.getParkingPlaces(), parkingZone.getId(),parkingDto);
 
     }
 

@@ -1,10 +1,12 @@
 package com.example.parkinglot.service;
 
 
+import com.example.parkinglot.model.dto.ParkingDto;
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingPlaceFilterDto;
 import com.example.parkinglot.model.dto.ParkingZoneDto;
 
+import com.example.parkinglot.model.entity.Parking;
 import com.example.parkinglot.model.entity.ParkingPlace;
 import com.example.parkinglot.model.entity.ParkingZone;
 import com.example.parkinglot.service.repository.ParkingPlaceRepository;
@@ -74,7 +76,9 @@ public class ParkingPlaceService {
 
     public ParkingPlaceDto convertToDto(ParkingPlace parkingPLace){
         ParkingZone parkingZone = parkingPLace.getParkingZone();
-        ParkingZoneDto parkingZoneDto = new ParkingZoneDto(parkingZone.getName(), parkingZone.getParkingPlaces(), parkingZone.getId());
+        Parking parking = parkingZone.getParking();
+        ParkingDto parkingDto = new ParkingDto(parking.getName(), parking.getCity(), parking.getStreet(), parking.getZipCode(), parking.getId());
+        ParkingZoneDto parkingZoneDto = new ParkingZoneDto(parkingZone.getName(), parkingZone.getParkingPlaces(), parkingZone.getId(), parkingDto);
         return new ParkingPlaceDto(parkingPLace.getNumber(), parkingZoneDto, parkingPLace.getId());
     }
 
