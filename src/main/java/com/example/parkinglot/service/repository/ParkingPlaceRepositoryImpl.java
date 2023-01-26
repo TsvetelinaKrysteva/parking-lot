@@ -15,6 +15,7 @@ import javax.persistence.criteria.Root;
 import com.example.parkinglot.model.dto.ParkingPlaceFilterDto;
 import com.example.parkinglot.model.entity.ParkingPlace;
 import com.example.parkinglot.model.entity.ParkingZone;
+import org.apache.commons.lang3.StringUtils;
 
 public class ParkingPlaceRepositoryImpl implements ParkingPLaceRepositoryCustom{
 
@@ -30,9 +31,14 @@ public class ParkingPlaceRepositoryImpl implements ParkingPLaceRepositoryCustom{
 
         if(filter.getParkingZoneName() != null){
             Join<ParkingPlace, ParkingZone> parkingZoneJoin = root.join("parkingZone");
-            predicates.add(criteriaBuilder.equal(parkingZoneJoin.get("name"), filter.getParkingZoneName()));
-
+            predicates.add(criteriaBuilder.equal(parkingZoneJoin.get("number"), Integer.parseInt(filter.getNumber())));
         }
+
+       if(StringUtils.isNoneBlank(filter.getNumber())){
+
+        predicates.add(criteriaBuilder.like(root.get("name"),filter.getNumber() +"%" ));
+           // TODO: 26.1.2023 г.  convert integer root value name to string
+       }
 
         criteria.orderBy(criteriaBuilder.desc(root.get("id")));
         if (!predicates.isEmpty()){

@@ -1,10 +1,13 @@
 package com.example.parkinglot.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import com.example.parkinglot.model.dto.ParkingZoneDto;
+import com.example.parkinglot.model.entity.ParkingZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +25,8 @@ public class ParkingService {
 
     @Autowired
     ParkingPlaceRepository parkingPlaceRepository;
+    @Autowired
+    ParkingZoneService parkingZoneService;
 
     public List<ParkingDto> findByFilter(ParkingFilterDto filterDto){
         return parkingRepository.findByFilter(filterDto)
@@ -68,7 +73,14 @@ public class ParkingService {
     }
 
     public ParkingDto convertToDTO(Parking parking){
-        return new ParkingDto(parking.getName(), parking.getCity(), parking.getStreet(), parking.getZipCode(), parking.getId());
+        ParkingDto parkingDto = new ParkingDto();
+        parkingDto.setName(parking.getName());
+        parkingDto.setId(parking.getId());
+        parkingDto.setCity(parkingDto.getCity());
+        parkingDto.setStreet(parkingDto.getStreet());
+        parkingDto.setZipCode(parking.getZipCode());
+
+        return parkingDto;
     }
 
     public Parking convertToParking(ParkingDto parkingDto){

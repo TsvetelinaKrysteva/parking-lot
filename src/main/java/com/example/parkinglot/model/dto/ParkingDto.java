@@ -1,6 +1,12 @@
 package com.example.parkinglot.model.dto;
 
 
+import com.example.parkinglot.model.entity.ParkingZone;
+import org.hibernate.service.spi.InjectService;
+
+import java.util.List;
+import java.util.Objects;
+
 public class ParkingDto {
     private Long id;
 
@@ -12,17 +18,32 @@ public class ParkingDto {
 
     private String zipCode;
 
+
+    private List<ParkingZoneDto> zones;
+
+
+    private List<ParkingZoneDto> parkingZoneDtoList;
     public ParkingDto(){
 
     }
-    public ParkingDto(String name, String city, String street, String zipCode, Long id) {
+
+    public ParkingDto(String name, String city, String street, String zipCode, Long id, List<ParkingZoneDto> zones) {
         this.id = id;
         this.name = name;
         this.city = city;
         this.street = street;
         this.zipCode = zipCode;
+        this.zones = zones;
+
     }
 
+    public List<ParkingZoneDto> getZones() {
+        return zones;
+    }
+
+    public void setZones(List<ParkingZoneDto> zones) {
+        this.zones = zones;
+    }
     public String getName() {
         return name;
     }
@@ -61,5 +82,28 @@ public class ParkingDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void addNewZone(ParkingZoneDto parkingZone){
+        List<ParkingZoneDto> pZones = this.getZones();
+        pZones.add(parkingZone);
+        this.setZones(pZones);
+
+    }
+    public void removeZone(ParkingZone parkingZone){
+        this.getZones().remove(parkingZone);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ParkingDto that = (ParkingDto) o;
+        return id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

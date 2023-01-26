@@ -5,25 +5,25 @@ public class ParkingPlaceDto {
 
     private Long id;
 
-    private int number;
+    private String number;
 
     private ParkingZoneDto parkingZone;
 
     public ParkingPlaceDto() {
     }
 
-    public ParkingPlaceDto(int number, ParkingZoneDto parkingZone, Long id) {
+    public ParkingPlaceDto(String number, ParkingZoneDto parkingZone, Long id) {
         this.id = id;
         this.number = number;
         this.parkingZone = parkingZone;
 
     }
 
-    public int getNumber() {
+    public String getNumber() {
         return number;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 

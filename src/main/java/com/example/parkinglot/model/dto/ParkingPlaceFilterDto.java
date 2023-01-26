@@ -3,7 +3,7 @@ package com.example.parkinglot.model.dto;
 public class ParkingPlaceFilterDto {
     private Long id;
 
-    private int number;
+    private String number;
 
     private String parkingZoneName;
 
@@ -23,11 +23,11 @@ public class ParkingPlaceFilterDto {
         this.id = id;
     }
 
-    public int getNumber() {
+    public String getNumber() {
         return number;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(String number) {
         this.number = number;
     }
 

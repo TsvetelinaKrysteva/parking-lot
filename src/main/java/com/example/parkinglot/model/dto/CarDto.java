@@ -6,19 +6,19 @@ public class CarDto {
 
     private Long id;
     private String plateNumber;
-    private int parkingPlaceNumber;
-    private String parkingZoneName;
+    private ParkingPlaceDto parkingPlaceDto;
+    private ParkingZoneDto parkingZoneDot;
 
 
 
     public CarDto() {
     }
 
-    public CarDto(String plateNumber, int parkingPlaceNumber, String parkingZoneName, Long id) {
+    public CarDto(String plateNumber, ParkingPlaceDto parkingPlaceDto, ParkingZoneDto parkingZoneDto, Long id) {
         this.id = id;
         this.plateNumber = plateNumber;
-        this.parkingPlaceNumber = parkingPlaceNumber;
-        this.parkingZoneName = parkingZoneName;
+        this.parkingPlaceDto = parkingPlaceDto;
+        this.parkingZoneDot = parkingZoneDto;
 
 //        this.parkingPlaceNum = parkingPlace;
     }
@@ -31,20 +31,20 @@ public class CarDto {
         this.plateNumber = plateNumber;
     }
 
-    public int getParkingPlaceNumber() {
-        return parkingPlaceNumber;
+    public ParkingPlaceDto getParkingPlaceDto() {
+        return parkingPlaceDto;
     }
 
-    public void setParkingPlaceNumber(int parkingPlaceNumber) {
-        this.parkingPlaceNumber = parkingPlaceNumber;
+    public void setParkingPlaceDto(ParkingPlaceDto parkingPlaceDto) {
+        this.parkingPlaceDto = parkingPlaceDto;
     }
 
-    public String getParkingZoneName() {
-        return parkingZoneName;
+    public ParkingZoneDto getParkingZoneDot() {
+        return parkingZoneDot;
     }
 
-    public void setParkingZoneName(String parkingZoneName) {
-        this.parkingZoneName = parkingZoneName;
+    public void setParkingZoneDot(ParkingZoneDto parkingZoneDot) {
+        this.parkingZoneDot = parkingZoneDot;
     }
     public Long getId() {
         return id;

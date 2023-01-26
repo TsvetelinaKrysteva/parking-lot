@@ -30,10 +30,11 @@ public class ParkingZoneRepositoryImpl implements ParkingZoneRepositoryCustom{
         Fetch<ParkingZone, Parking> parkingFetch = root.fetch("parking");
         if(filter.getParkingName() != null){
             Join<ParkingZone, Parking> parkingJoin = root.join("parking");
-            predicates.add(criteriaBuilder.equal(parkingJoin.get("name"), filter.getParkingName()));
+            predicates.add(criteriaBuilder.like(parkingJoin.get("name"), filter.getParkingName()));
         }
-
-
+        if(filter.getName() != null){
+            predicates.add(criteriaBuilder.like(root.get("name"), filter.getName() + "%"));
+        }
         criteria.orderBy(criteriaBuilder.asc(root.get("name")));
         if(!predicates.isEmpty()){
             criteria.where(predicates.toArray(new Predicate[predicates.size()])).distinct(true);

@@ -26,6 +26,12 @@ public class ParkingZoneService {
     ParkingRepository parkingRepository;
     @Autowired
     ParkingPlaceRepository parkingPlaceRepository;
+    @Autowired
+    ParkingPlaceService parkingPlaceService;
+//    @Autowired
+//    ParkingZoneService parkingZoneService;
+    @Autowired
+    ParkingService parkingService;
 
 
     public List<ParkingZoneDto> filter(ParkingZoneFilterDto parkingZoneFilterDto){
@@ -35,6 +41,7 @@ public class ParkingZoneService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
 
     public List<ParkingZoneDto> getParkingZones() {
         return ((List<ParkingZone>) parkingZoneRepository.findAll())
@@ -59,8 +66,8 @@ public class ParkingZoneService {
    }
 
     @Transactional
-    public void createParkingZone(ParkingZoneDto parkingZoneDto, Long parkingId) {
-        Parking parking = parkingRepository.findById(parkingId).orElseThrow( () -> new RuntimeException("Such parking doesn't exist!"));
+    public void createParkingZone(ParkingZoneDto parkingZoneDto) {
+        Parking parking = parkingRepository.findById(parkingZoneDto.getParkingDto().getId()).orElseThrow( () -> new RuntimeException("Such parking doesn't exist!"));
         ParkingZone parkingZone = convertToParkingZone(parkingZoneDto);
         if (parkingZoneRepository.findByName(parkingZone.getName()).isPresent()){
             throw new RuntimeException("Zones with the same name can't exist!");
@@ -70,10 +77,16 @@ public class ParkingZoneService {
         parkingZoneRepository.save(parkingZone);
     }
 
-    public void updateParkingZone(ParkingZoneDto parkingZoneDto, Long parkingZoneDtoId) {
-        parkingZoneDto.setId(parkingZoneDtoId);
+    @Transactional
+    public void updateParkingZone(ParkingZoneDto parkingZoneDto) {
+//        parkingZoneDto.setId(parkingZoneDto.getId());
         ParkingZone parkingZone = convertToParkingZone(parkingZoneDto);
+        Parking parking = parkingZone.getParking();
+        if(!parking.getZones().contains(parkingZone)){
+            parking.addNewZone(parkingZone);
+        }
         parkingZoneRepository.save(parkingZone);
+
 
     }
 
@@ -84,8 +97,12 @@ public class ParkingZoneService {
 
     public ParkingZoneDto convertToDto(ParkingZone parkingZone){
         Parking parking = parkingZone.getParking();
-        ParkingDto parkingDto = new ParkingDto(parking.getName(), parking.getCity(), parking.getStreet(), parking.getZipCode(), parking.getId());
-        return new ParkingZoneDto(parkingZone.getName(), parkingZone.getParkingPlaces(), parkingZone.getId(),parkingDto);
+        List<ParkingPlaceDto> places= (List<ParkingPlaceDto>) parkingZone.getParkingPlaces().stream().map(p -> parkingPlaceService.convertToDto(p)).collect(Collectors.toList());
+
+        ParkingDto parkingDto = new ParkingDto();
+        parkingDto.setId(parking.getId());
+        parkingDto.setName(parking.getName());
+        return new ParkingZoneDto(parkingZone.getName(), places, parkingZone.getId(),parkingDto);
 
     }
 
@@ -98,6 +115,7 @@ public class ParkingZoneService {
         }
 
         parkingZone.setName(parkingZoneDto.getName());
+        parkingZone.setParking(parkingRepository.findById(parkingZoneDto.getParkingDto().getId()).orElseThrow());
         return parkingZone;
     }
 
