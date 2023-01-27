@@ -2,6 +2,7 @@ package com.example.parkinglot.view;
 
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingPlaceFilterDto;
+import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingPlaceService;
 import com.example.parkinglot.service.ParkingZoneService;
 import com.vaadin.flow.component.button.Button;
@@ -25,25 +26,28 @@ public class ParkingPlaceView extends VerticalLayout {
     private Button add = new Button("add place");
     private ParkingPlaceService parkingPlaceService;
     private ParkingZoneService parkingZoneService;
+    private CarService carService;
     private ParkingPlaceForm form;
 
 
-    public ParkingPlaceView(ParkingPlaceService parkingPlaceService, ParkingZoneService parkingZoneService)
+    public ParkingPlaceView(ParkingPlaceService parkingPlaceService, ParkingZoneService parkingZoneService, CarService carService)
     {
         this.parkingPlaceService = parkingPlaceService;
         this.parkingZoneService = parkingZoneService;
+        this.carService = carService;
         configure();
-        placeGrid.setItems(parkingPlaceService.getParkingPlaces());
+
 
         filter.setValueChangeMode(ValueChangeMode.LAZY);
         filter.addValueChangeListener(event -> {
             onFilterChange();
         });
 
-       form = new ParkingPlaceForm(parkingZoneService.getParkingZones(), this::savePlace, this::deletePlace);
+       form = new ParkingPlaceForm(parkingZoneService.getParkingZones(), carService.getAllCars(), this::savePlace, this::deletePlace);
        add.addClickListener(event -> form.setParkingPlace(new ParkingPlaceDto()));
        placeGrid.asSingleSelect().addValueChangeListener(event -> form.setParkingPlace(event.getValue()));
        add(filter, add, getContent());
+       updateGrid(new ParkingPlaceFilterDto());
 
     }
 
@@ -66,6 +70,8 @@ public class ParkingPlaceView extends VerticalLayout {
         placeGrid.setSizeFull();
         placeGrid.removeAllColumns();
         placeGrid.addColumn("number");
+        placeGrid.addColumn(parkingPlaceDto -> parkingPlaceDto.getCar()!=null ?
+                parkingPlaceDto.getCar().getPlateNumber() : "").setHeader("car");
         placeGrid.addColumn(parkingPlaceDto -> parkingPlaceDto.getParkingZone().getName()).setHeader("zone");
 
     }

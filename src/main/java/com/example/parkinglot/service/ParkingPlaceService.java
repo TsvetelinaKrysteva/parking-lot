@@ -1,14 +1,17 @@
 package com.example.parkinglot.service;
 
 
+import com.example.parkinglot.model.dto.CarDto;
 import com.example.parkinglot.model.dto.ParkingDto;
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingPlaceFilterDto;
 import com.example.parkinglot.model.dto.ParkingZoneDto;
 
+import com.example.parkinglot.model.entity.Car;
 import com.example.parkinglot.model.entity.Parking;
 import com.example.parkinglot.model.entity.ParkingPlace;
 import com.example.parkinglot.model.entity.ParkingZone;
+import com.example.parkinglot.service.repository.CarRepository;
 import com.example.parkinglot.service.repository.ParkingPlaceRepository;
 
 import com.example.parkinglot.service.repository.ParkingZoneRepository;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +30,9 @@ public class ParkingPlaceService {
     ParkingPlaceRepository parkingPlaceRepository;
     @Autowired
     ParkingZoneService parkingZoneService;
+
+    @Autowired
+    CarRepository carRepository;
 
     @Autowired
     ParkingZoneRepository parkingZoneRepository;
@@ -73,6 +80,13 @@ public class ParkingPlaceService {
     public void updateParkingPlace(ParkingPlaceDto parkingPlaceDto){
 
         ParkingPlace parkingPlace = convertToParkingPlace(parkingPlaceDto);
+        if(parkingPlace.getCar() != null){
+           Optional<ParkingPlace> existingPlace =  parkingPlaceRepository.findByCarId(parkingPlace.getCar().getId());
+           if(existingPlace.isPresent() && !existingPlace.get().getId().equals(parkingPlace.getId())){
+               throw new RuntimeException("Car is already parked!");
+           }
+        }
+
         parkingPlaceRepository.save(parkingPlace);
     }
 
@@ -84,6 +98,7 @@ public class ParkingPlaceService {
     public ParkingPlaceDto convertToDto(ParkingPlace parkingPLace){
         ParkingZone parkingZone = parkingPLace.getParkingZone();
         Parking parking = parkingZone.getParking();
+        CarDto car = null;
 
         ParkingDto parkingDto = new ParkingDto();
         parkingDto.setName(parking.getName());
@@ -97,7 +112,16 @@ public class ParkingPlaceService {
         parkingZoneDto.setName(parkingZone.getName());
         parkingZoneDto.setParkingDto(parkingDto);
 
-        return new ParkingPlaceDto(Integer.toString(parkingPLace.getNumber()), parkingZoneDto, parkingPLace.getId());
+
+        if(parkingPLace.getCar()!=null){
+            car = new CarDto();
+            car.setId(parkingPLace.getCar().getId());
+            car.setPlateNumber(parkingPLace.getCar().getPlateNumber());
+
+
+        }
+
+        return new ParkingPlaceDto(Integer.toString(parkingPLace.getNumber()), parkingZoneDto, parkingPLace.getId(), car);
     }
 
     public ParkingPlace convertToParkingPlace(ParkingPlaceDto parkingPlaceDto){
@@ -108,8 +132,13 @@ public class ParkingPlaceService {
         else{
             parkingPlace = new ParkingPlace();
         }
+        parkingPlace.setId(parkingPlaceDto.getId());
         parkingPlace.setNumber(Integer.parseInt(parkingPlaceDto.getNumber()));
         parkingPlace.setParkingZone(parkingZoneRepository.findById(parkingPlaceDto.getParkingZone().getId()).orElseThrow());
+        if(parkingPlaceDto.getCar()!=null){
+            parkingPlace.setCar(carRepository.findById(parkingPlaceDto.getCar().getId()).orElseThrow());
+        }
+
         return parkingPlace;
 
     }

@@ -19,7 +19,7 @@ public class Car extends BaseEntity {
     @Column(unique = true)
     private String plateNumber;
 
-    @OneToOne
+    @OneToOne(mappedBy = "car")
     private ParkingPlace parkingPlace;
 
 

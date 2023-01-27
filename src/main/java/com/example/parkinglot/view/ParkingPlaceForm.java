@@ -1,6 +1,7 @@
 package com.example.parkinglot.view;
 
 
+import com.example.parkinglot.model.dto.CarDto;
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingZoneDto;
 import com.vaadin.flow.component.button.Button;
@@ -10,6 +11,7 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 
@@ -21,25 +23,28 @@ public class ParkingPlaceForm extends FormLayout {
 
     private TextField number = new TextField("number");
     private ComboBox<ParkingZoneDto> zoneName = new ComboBox<>("zones");
+    private ComboBox<CarDto> car = new ComboBox<>("cars");
     private Button save  = new Button("save");
     private Button delete  = new Button("delete");
     private Button clear  = new Button("clear");
     private Consumer<ParkingPlaceDto> onSaveHandler;
     private Consumer<ParkingPlaceDto> deleteHandler;
     private ParkingPlaceDto parkingPlace;
-    private Binder<ParkingPlaceDto> binder = new Binder<>(ParkingPlaceDto.class);
+    private Binder<ParkingPlaceDto> binder = new BeanValidationBinder<>(ParkingPlaceDto.class);
 
-    public ParkingPlaceForm(List<ParkingZoneDto> zones, Consumer<ParkingPlaceDto> onSaveHandler, Consumer<ParkingPlaceDto> deleteHandler){
-//        binder.bindInstanceFields(this);
+    public ParkingPlaceForm(List<ParkingZoneDto> zones, List<CarDto> cars, Consumer<ParkingPlaceDto> onSaveHandler, Consumer<ParkingPlaceDto> deleteHandler){
+        binder.bindInstanceFields(this);
         this.onSaveHandler = onSaveHandler;
         this.deleteHandler = deleteHandler;
         binder.forField(zoneName).bind(ParkingPlaceDto::getParkingZone, ParkingPlaceDto::setParkingZone);
         binder.forField(number).bind(ParkingPlaceDto::getNumber, ParkingPlaceDto::setNumber);
+        binder.forField(car).bind(ParkingPlaceDto::getCar, ParkingPlaceDto::setCar);
+        car.setItems(cars);
+        car.setItemLabelGenerator(CarDto::getPlateNumber);
         zoneName.setItems(zones);
         zoneName.setItemLabelGenerator(ParkingZoneDto::getName);
+        add(number,car,zoneName,getButtonsLayout());
         setParkingPlace(new ParkingPlaceDto());
-        add(number,zoneName,getButtonsLayout());
-
 
     }
 

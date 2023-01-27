@@ -9,13 +9,20 @@ public class ParkingPlaceDto {
 
     private ParkingZoneDto parkingZone;
 
+
+
+    private CarDto car;
+
     public ParkingPlaceDto() {
     }
 
-    public ParkingPlaceDto(String number, ParkingZoneDto parkingZone, Long id) {
+    public ParkingPlaceDto(String number, ParkingZoneDto parkingZone, Long id, CarDto car) {
         this.id = id;
         this.number = number;
         this.parkingZone = parkingZone;
+        this.car = car;
+
+
 
     }
 
@@ -41,5 +48,12 @@ public class ParkingPlaceDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+    public CarDto getCar() {
+        return car;
+    }
+
+    public void setCar(CarDto car) {
+        this.car = car;
     }
 }

@@ -8,6 +8,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
 
@@ -26,9 +27,10 @@ public class CarForm extends FormLayout {
     private Consumer<CarDto> onSaveHandler;
     private Consumer<CarDto> deleteHandler;
     private CarDto car;
-    private Binder<CarDto> binder = new Binder<>(CarDto.class);
+    private Binder<CarDto> binder = new BeanValidationBinder<>(CarDto.class);
 
     public CarForm(List<ParkingPlaceDto> placesList, Consumer<CarDto> onSaveHandler, Consumer<CarDto> deleteHandler){
+        binder.bindInstanceFields(this);
         this.onSaveHandler = onSaveHandler;
         this.deleteHandler = deleteHandler;
         binder.forField(places).bind(CarDto::getParkingPlaceDto, CarDto::setParkingPlaceDto);

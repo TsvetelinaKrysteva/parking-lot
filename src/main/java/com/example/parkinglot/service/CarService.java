@@ -66,6 +66,7 @@ public class CarService {
     public void createCar(CarDto carDto){
         ParkingPlace parkingPlace = parkingPlaceRepository.findById(carDto.getParkingPlaceDto().getId()).orElseThrow();
         Car car = convertToCar(carDto);
+
         if (carRepository.findByPlateNumber(carDto.getPlateNumber()).isPresent()){
             throw new RuntimeException("Cars with same plate numbers can't exist!");
         }
@@ -107,17 +108,18 @@ public class CarService {
     }
 
     public Car convertToCar(CarDto carDto){
-        Car car;
+        Car car = new Car();
 
         ParkingPlace parkingPlace = parkingPlaceRepository.findById(carDto.getParkingPlaceDto().getId()).orElseThrow();
 
+
         if(carDto.getId() != null){
             car = carRepository.findById(carDto.getId()).orElseThrow();
-        } else{
-            car = new Car ();
         }
+
         car.setPlateNumber(carDto.getPlateNumber());
         car.setParkingPlace(parkingPlace);
+//        parkingPlace.setCar(car);
         return car;
 
     }
