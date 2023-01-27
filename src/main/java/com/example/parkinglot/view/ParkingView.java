@@ -3,15 +3,12 @@ package com.example.parkinglot.view;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.parkinglot.model.entity.Parking;
-import com.vaadin.flow.component.crud.Crud;
-import org.apache.commons.collections4.CollectionUtils;
+import com.example.parkinglot.presenter.ParkingPresenter;
+import com.vaadin.flow.component.notification.Notification;
 import org.apache.commons.lang3.StringUtils;
 
 import com.example.parkinglot.model.dto.ParkingDto;
 import com.example.parkinglot.model.dto.ParkingFilterDto;
-import com.example.parkinglot.service.ParkingService;
-import com.example.parkinglot.view.ParkingForm.ParkingFormEvent;
 import com.example.parkinglot.view.ParkingForm.SaveEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
@@ -21,10 +18,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.theme.Theme;
 
-@Route(value = "")
-@Theme()
+@Route(value = "", layout = MainLayout.class)
 @PageTitle("Parkings | Vaadin CRM")
 public class ParkingView extends VerticalLayout {
 
@@ -32,48 +27,37 @@ public class ParkingView extends VerticalLayout {
 	private TextField filter = new TextField();
 	private Button button = new Button("Add Parking");
 	private ParkingForm parkingForm = new ParkingForm();
-	private ParkingService parkingService;
 
 
+	private ParkingPresenter parkingPresenter;
 
-
-	public ParkingView(ParkingService parkingService) {
-		this.parkingService = parkingService;
+	public ParkingView(ParkingPresenter presenter) {
+		this.parkingPresenter = presenter;
+		this.parkingPresenter.setView(this);
 		configuration();
-		parkingGrid.setItems(parkingService.getParkings());
-
 		filter.setValueChangeMode(ValueChangeMode.LAZY);
 
 		filter.addValueChangeListener(event -> {
 			onFilterChange();
 		});
-		
-		
+
 		add(getHorizontalLayout(), getContent());
 
-		updateGrid(new ParkingFilterDto());
 		button.addClickListener(event -> parkingForm.setParking(new ParkingDto()));
 		
 		parkingForm.addListener(SaveEvent.class, saveEvent -> saveParking(saveEvent));
 		parkingForm.addListener(ParkingForm.DeleteEvent.class, deleteEvent -> deleteParking(deleteEvent));
 		parkingGrid.asSingleSelect().addValueChangeListener(event -> parkingForm.setParking(event.getValue()));
+		parkingPresenter.onViewInit();
 	}
 
 	private void deleteParking(ParkingForm.DeleteEvent deleteEvent){
 		ParkingDto parkingDto = deleteEvent.getParking();
-		parkingService.deleteParking(parkingDto.getId());
-		updateGrid(new ParkingFilterDto());
+		parkingPresenter.onDeleteParking(parkingDto);
 	}
 	private void saveParking(SaveEvent saveEvent) {
 		ParkingDto parkingDto = saveEvent.getParking();
-		if(parkingDto.getId()!=null){
-			parkingService.updateParking(parkingDto, parkingDto.getId());
-		}
-		else{
-			parkingService.createParking(parkingDto);
-		}
-
-		updateGrid(new ParkingFilterDto());
+		parkingPresenter.onParkingSaved(parkingDto);
 	}
 
 
@@ -107,21 +91,20 @@ public class ParkingView extends VerticalLayout {
 		List<String> names = new ArrayList<>();
 		String name = filter.getValue();
 		if (StringUtils.isBlank(name)) {
-			updateGrid(new ParkingFilterDto());
+			parkingPresenter.onFilterChanged(new ParkingFilterDto());
 			return;
 		}
 		names.add(name);
 		parkingFilterDto.setName(names);
-		updateGrid(parkingFilterDto);
+		parkingPresenter.onFilterChanged(parkingFilterDto);
 
 	}
 
-	private void updateGrid(ParkingFilterDto parkingFilterDto) {
-		if (CollectionUtils.isEmpty(parkingFilterDto.getName())) {
-			parkingGrid.setItems(parkingService.getParkings());
-		} else {
-			parkingGrid.setItems(parkingService.findByFilter(parkingFilterDto));
-		}
+	public void updateGrid(List<ParkingDto> parkings) {
+		parkingGrid.setItems(parkings);
 	}
 
+	public void showErrorMessage(String message) {
+		Notification.show(message , 5000, Notification.Position.MIDDLE);
+	}
 }

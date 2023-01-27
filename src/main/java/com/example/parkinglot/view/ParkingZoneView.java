@@ -1,6 +1,7 @@
 package com.example.parkinglot.view;
 
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import com.example.parkinglot.model.dto.CarFilterDto;
@@ -9,6 +10,7 @@ import com.example.parkinglot.model.dto.ParkingFilterDto;
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingZoneDto;
 import com.example.parkinglot.model.dto.ParkingZoneFilterDto;
+import com.example.parkinglot.presenter.ParkingZonePresenter;
 import com.example.parkinglot.service.ParkingService;
 import com.example.parkinglot.service.ParkingZoneService;
 import com.vaadin.flow.component.button.Button;
@@ -23,8 +25,8 @@ import com.vaadin.flow.theme.Theme;
 import org.apache.commons.lang3.StringUtils;
 
 
-@Route(value = "/parking-zones")
-@Theme()
+@Route(value = "/parking-zones", layout = MainLayout.class)
+
 @PageTitle("ParkingZones | Vaadin CRM")
 public class ParkingZoneView extends VerticalLayout {
 	private Grid<ParkingZoneDto> parkingZonesGrid = new Grid<>(ParkingZoneDto.class);
@@ -34,10 +36,14 @@ public class ParkingZoneView extends VerticalLayout {
 	private ParkingService parkingService;
 	private ParkingZoneForm parkingZoneForm;
 	private Button addZone  = new Button("Add zone");
+
+	private ParkingZonePresenter parkingZonePresenter;
 	
-	public ParkingZoneView(ParkingZoneService parkingZoneService, ParkingService parkingService) {
-		this.parkingZoneService = parkingZoneService;
-		this.parkingService = parkingService;
+	public ParkingZoneView(ParkingZonePresenter parkingZonePresenter) {
+		this.parkingZonePresenter = parkingZonePresenter;
+		this.parkingZonePresenter.setParkingZoneView(this);
+//		this.parkingZoneService = parkingZoneService;
+//		this.parkingService = parkingService;
 
 		configuration();
 		parkingZonesGrid.setItems(parkingZoneService.getParkingZones());
@@ -57,7 +63,7 @@ public class ParkingZoneView extends VerticalLayout {
 	}
 
 
-	private void saveZone(ParkingZoneDto parkingZoneDto){
+	private void saveZone(ParkingForm.SaveEvent saveEvent){
 		if(parkingZoneDto.getId()!=null){
 			parkingZoneService.updateParkingZone(parkingZoneDto);
 			updateGrid(new ParkingZoneFilterDto());
@@ -67,7 +73,7 @@ public class ParkingZoneView extends VerticalLayout {
 		}
 	}
 
-	private void deleteZone(ParkingZoneDto parkingZoneDto){
+	private void deleteZone(ParkingForm.DeleteEvent deleteEvent){
 		parkingZoneService.deleteParkingZone(parkingZoneDto.getId());
 		updateGrid(new ParkingZoneFilterDto());
 	}
@@ -100,13 +106,15 @@ public class ParkingZoneView extends VerticalLayout {
 		content.setSizeFull();
 		return content;
 	}
-	private void updateGrid(ParkingZoneFilterDto parkingZoneFilterDto) {
-		if (StringUtils.isBlank(parkingZoneFilterDto.getName())) {
-			parkingZonesGrid.setItems(parkingZoneService.getParkingZones());
-		} else {
-			parkingZonesGrid.setItems(parkingZoneService.filter((parkingZoneFilterDto)));
-		}
+	public void updateGrid(List<ParkingZoneDto> parkingZoneDtos) {
+		parkingZonesGrid.setItems(parkingZoneDtos);
 	}
+//		if (StringUtils.isBlank(parkingZoneFilterDto.getName())) {
+//			parkingZonesGrid.setItems(parkingZoneService.getParkingZones());
+//		} else {
+//			parkingZonesGrid.setItems(parkingZoneService.filter((parkingZoneFilterDto)));
+//		}
+//	}
 
 	private void onFilterChange(){
 		ParkingZoneFilterDto parkingZoneFilterDto = new ParkingZoneFilterDto();

@@ -17,8 +17,8 @@ import com.vaadin.flow.theme.Theme;
 import org.apache.commons.lang3.StringUtils;
 
 
-@Route(value = "/cars")
-@Theme()
+@Route(value = "/cars", layout = MainLayout.class)
+
 @PageTitle("Car | Vaadin CRM")
 public class CarView extends VerticalLayout {
     private Grid<CarDto> carGrid = new Grid<>(CarDto.class);
