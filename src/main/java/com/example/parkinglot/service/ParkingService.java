@@ -76,8 +76,8 @@ public class ParkingService {
         ParkingDto parkingDto = new ParkingDto();
         parkingDto.setName(parking.getName());
         parkingDto.setId(parking.getId());
-        parkingDto.setCity(parkingDto.getCity());
-        parkingDto.setStreet(parkingDto.getStreet());
+        parkingDto.setCity(parking.getCity());
+        parkingDto.setStreet(parking.getStreet());
         parkingDto.setZipCode(parking.getZipCode());
 
         return parkingDto;

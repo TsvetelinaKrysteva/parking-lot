@@ -35,6 +35,7 @@ public class CarService {
     public List<CarDto> findByFilter(CarFilterDto filterDto){
         return carRepository.findByFilter(filterDto)
                 .stream()
+                .filter(c->c.getParkingPlace()!=null)
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
@@ -65,6 +66,7 @@ public class CarService {
 
     public void createCar(CarDto carDto){
         ParkingPlace parkingPlace = parkingPlaceRepository.findById(carDto.getParkingPlaceDto().getId()).orElseThrow();
+
         Car car = convertToCar(carDto);
 
         if (carRepository.findByPlateNumber(carDto.getPlateNumber()).isPresent()){
@@ -83,6 +85,9 @@ public class CarService {
 
 
         Car car = convertToCar(carDto);
+//        ParkingPlace parkingPlace = parkingPlaceRepository.findByCarId(car.getId()).orElseThrow();
+//        car.setParkingPlace(parkingPlace);
+//        parkingPlace.setCar(car);
         carRepository.save(car);
     }
 

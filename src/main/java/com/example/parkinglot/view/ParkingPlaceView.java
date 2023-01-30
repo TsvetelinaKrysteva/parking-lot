@@ -2,6 +2,7 @@ package com.example.parkinglot.view;
 
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingPlaceFilterDto;
+import com.example.parkinglot.presenter.ParkingPlacePresenter;
 import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingPlaceService;
 import com.example.parkinglot.service.ParkingZoneService;
@@ -9,6 +10,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.HeaderRow;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -22,6 +24,7 @@ import com.vaadin.flow.theme.Theme;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 
@@ -29,48 +32,41 @@ import java.util.function.Consumer;
 @PageTitle("ParkingPlaces | Vaadin CRM")
 public class ParkingPlaceView extends VerticalLayout {
     private Grid<ParkingPlaceDto> placeGrid = new Grid<>(ParkingPlaceDto.class);
-    private TextField filter = new TextField("Filter by");
+
+
     private Button add = new Button("add place");
-    private ParkingPlaceService parkingPlaceService;
-    private ParkingZoneService parkingZoneService;
-    private CarService carService;
+    private ParkingPlacePresenter parkingPlacePresenter;
     private ParkingPlaceForm form;
     private ParkingPlaceFilter gridFilter;
 
 
-    public ParkingPlaceView(ParkingPlaceService parkingPlaceService, ParkingZoneService parkingZoneService, CarService carService)
+    public ParkingPlaceView(ParkingPlacePresenter parkingPlacePresenter)
     {
-        this.parkingPlaceService = parkingPlaceService;
-        this.parkingZoneService = parkingZoneService;
-        this.carService = carService;
+        this.parkingPlacePresenter = parkingPlacePresenter;
+        this.parkingPlacePresenter.setParkingPlaceView(this);
+
+
         configure();
+        parkingPlacePresenter.onViewInit();
 
 
-        filter.setValueChangeMode(ValueChangeMode.LAZY);
-        filter.addValueChangeListener(event -> {
-            onFilterChange();
-        });
 
-       form = new ParkingPlaceForm(parkingZoneService.getParkingZones(), carService.getAllCars(), this::savePlace, this::deletePlace);
+       form = new ParkingPlaceForm(this::savePlace, this::deletePlace);
+       parkingPlacePresenter.carDtos(form);
+       parkingPlacePresenter.zoneDtos(form);
        add.addClickListener(event -> form.setParkingPlace(new ParkingPlaceDto()));
        placeGrid.asSingleSelect().addValueChangeListener(event -> form.setParkingPlace(event.getValue()));
-       add(filter, add, getContent());
-       updateGrid(new ParkingPlaceFilterDto());
+       add(add, getContent());
+       parkingPlacePresenter.onViewInit();
 
     }
 
     private void savePlace(ParkingPlaceDto parkingPlaceDto){
-        if(parkingPlaceDto.getId()!=null){
-            parkingPlaceService.updateParkingPlace(parkingPlaceDto);
-        }else{
-            parkingPlaceService.createParkingPlace(parkingPlaceDto);
-        }
-        updateGrid(new ParkingPlaceFilterDto());
+        parkingPlacePresenter.onSavePlace(parkingPlaceDto);
     }
 
     private  void deletePlace(ParkingPlaceDto parkingPlaceDto){
-        parkingPlaceService.deleteParkingPlace(parkingPlaceDto.getId());
-        updateGrid(new ParkingPlaceFilterDto());
+        parkingPlacePresenter.onDeletePlace(parkingPlaceDto);
     }
 
     private void configure(){
@@ -83,7 +79,8 @@ public class ParkingPlaceView extends VerticalLayout {
         Grid.Column<ParkingPlaceDto> car = placeGrid.addColumn(parkingPlaceDto -> parkingPlaceDto.getCar()!=null ?
                 parkingPlaceDto.getCar().getPlateNumber() : "").setHeader("car");
 
-        placeGrid.addColumn(parkingPlaceDto -> parkingPlaceDto.getParkingZone().getName()).setHeader("zone");
+        Grid.Column<ParkingPlaceDto> zone = placeGrid.addColumn(parkingPlaceDto -> parkingPlaceDto.getParkingZone().getName()).setHeader("zone");
+
         ListDataProvider<ParkingPlaceDto> listDataProvider = new ListDataProvider<>(new ArrayList<>());
         gridFilter = new ParkingPlaceFilter();
         gridFilter.setDataProvider(listDataProvider);
@@ -92,6 +89,7 @@ public class ParkingPlaceView extends VerticalLayout {
         HeaderRow header = placeGrid.appendHeaderRow();
         header.getCell(numberColumn).setComponent(createFilterHeaderCell("", number -> this.gridFilter.setNumber(number)));
         header.getCell(car).setComponent(createFilterHeaderCell("", plateNumber -> this.gridFilter.setPlateNumber(plateNumber)));
+        header.getCell(zone).setComponent(createFilterHeaderCell("", zoneName -> this.gridFilter.setZoneName(zoneName)));
 
 
     }
@@ -117,27 +115,14 @@ public class ParkingPlaceView extends VerticalLayout {
         return content;
     }
 
-    private void updateGrid(ParkingPlaceFilterDto parkingPlaceFilterDto){
-//        String numberToString = Integer.toString(parkingPlaceFilterDto.getNumber());
-        ListDataProvider<ParkingPlaceDto> listDataProvider;
-        if(StringUtils.isBlank(parkingPlaceFilterDto.getNumber())){
-            listDataProvider = DataProvider.ofCollection(parkingPlaceService.getParkingPlaces());
-        }else{
-            listDataProvider = DataProvider.ofCollection(parkingPlaceService.findByFilter(parkingPlaceFilterDto));
-        }
+    public void updateGrid(ListDataProvider<ParkingPlaceDto> listDataProvider){
+
         placeGrid.setDataProvider(listDataProvider);
         gridFilter.setDataProvider(listDataProvider);
     }
 
-    private void onFilterChange(){
-        ParkingPlaceFilterDto parkingPlaceFilterDto = new ParkingPlaceFilterDto();
-//        String number = Integer.toString(parkingPlaceFilterDto.getNumber());
-        if(StringUtils.isBlank(parkingPlaceFilterDto.getNumber())){
-            updateGrid(new ParkingPlaceFilterDto());
-            return;
-        }
-        parkingPlaceFilterDto.setNumber(parkingPlaceFilterDto.getNumber());
-        updateGrid(parkingPlaceFilterDto);
+    public void showErrorMessage(String message) {
+        Notification.show(message , 5000, Notification.Position.MIDDLE);
     }
 
     private static class ParkingPlaceFilter {
@@ -145,6 +130,7 @@ public class ParkingPlaceView extends VerticalLayout {
         private ListDataProvider<ParkingPlaceDto> dataProvider;
         private String number;
         private String plateNumber;
+        private String zoneName;
 
         public void setNumber(String number) {
             this.number = number;
@@ -152,6 +138,10 @@ public class ParkingPlaceView extends VerticalLayout {
         }
         public void setPlateNumber(String plateNumber){
             this.plateNumber = plateNumber;
+            this.dataProvider.refreshAll();
+        }
+        public void setZoneName(String zoneName){
+            this.zoneName = zoneName;
             this.dataProvider.refreshAll();
         }
 
@@ -164,13 +154,13 @@ public class ParkingPlaceView extends VerticalLayout {
         private boolean test(ParkingPlaceDto parkingPlace){
             boolean matchesPlateNumber = true;
             boolean matchesNumber = matches(parkingPlace.getNumber(), number);
+            boolean matchesZoneName = matches(parkingPlace.getParkingZone().getName(), zoneName);
             if(!StringUtils.isBlank(plateNumber)){
-
                matchesPlateNumber = parkingPlace.getCar() == null ? false : matches(parkingPlace.getCar().getPlateNumber(), plateNumber);
             }
 
 
-            return matchesNumber && matchesPlateNumber;
+            return matchesNumber && matchesPlateNumber && matchesZoneName;
         }
 
         private boolean matches(String value, String searchTerm){
@@ -188,3 +178,5 @@ public class ParkingPlaceView extends VerticalLayout {
     }
 
 }
+
+

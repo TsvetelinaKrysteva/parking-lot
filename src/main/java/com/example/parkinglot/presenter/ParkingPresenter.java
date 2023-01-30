@@ -31,8 +31,8 @@ public class ParkingPresenter {
 
 
     public void onParkingSaved(ParkingDto parkingDto) {
-        if(StringUtils.isBlank(parkingDto.getName())){
-            this.parkingView.showErrorMessage("Napravi si validaciite");
+        if(StringUtils.isBlank(parkingDto.getName()) || StringUtils.isBlank(parkingDto.getCity()) || StringUtils.isBlank(parkingDto.getStreet()) ){
+            this.parkingView.showErrorMessage("Please fill in the required fields!(name, city, street)");
             return;
         }
 		if(parkingDto.getId()!=null){

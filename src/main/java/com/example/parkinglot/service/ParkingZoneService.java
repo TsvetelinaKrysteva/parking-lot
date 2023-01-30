@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -82,11 +83,11 @@ public class ParkingZoneService {
 //        parkingZoneDto.setId(parkingZoneDto.getId());
         ParkingZone parkingZone = convertToParkingZone(parkingZoneDto);
         Parking parking = parkingZone.getParking();
+
         if(!parking.getZones().contains(parkingZone)){
             parking.addNewZone(parkingZone);
         }
         parkingZoneRepository.save(parkingZone);
-
 
     }
 
@@ -102,6 +103,8 @@ public class ParkingZoneService {
         ParkingDto parkingDto = new ParkingDto();
         parkingDto.setId(parking.getId());
         parkingDto.setName(parking.getName());
+        parkingDto.setCity(parking.getCity());
+        parkingDto.setStreet(parkingDto.getStreet());
         return new ParkingZoneDto(parkingZone.getName(), places, parkingZone.getId(),parkingDto);
 
     }

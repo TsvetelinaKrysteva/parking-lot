@@ -17,8 +17,6 @@ public class ParkingZoneDto {
     private Long id;
     private String name;
 
-
-
     private List<ParkingPlaceDto> places;
 //    private List<Integer> placeNames;
     private ParkingDto parkingDto;

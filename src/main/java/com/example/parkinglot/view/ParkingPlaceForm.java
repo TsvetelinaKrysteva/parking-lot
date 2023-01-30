@@ -32,17 +32,14 @@ public class ParkingPlaceForm extends FormLayout {
     private ParkingPlaceDto parkingPlace;
     private Binder<ParkingPlaceDto> binder = new BeanValidationBinder<>(ParkingPlaceDto.class);
 
-    public ParkingPlaceForm(List<ParkingZoneDto> zones, List<CarDto> cars, Consumer<ParkingPlaceDto> onSaveHandler, Consumer<ParkingPlaceDto> deleteHandler){
+    public ParkingPlaceForm(Consumer<ParkingPlaceDto> onSaveHandler, Consumer<ParkingPlaceDto> deleteHandler){
         binder.bindInstanceFields(this);
         this.onSaveHandler = onSaveHandler;
         this.deleteHandler = deleteHandler;
         binder.forField(zoneName).bind(ParkingPlaceDto::getParkingZone, ParkingPlaceDto::setParkingZone);
         binder.forField(number).bind(ParkingPlaceDto::getNumber, ParkingPlaceDto::setNumber);
         binder.forField(car).bind(ParkingPlaceDto::getCar, ParkingPlaceDto::setCar);
-        car.setItems(cars);
-        car.setItemLabelGenerator(CarDto::getPlateNumber);
-        zoneName.setItems(zones);
-        zoneName.setItemLabelGenerator(ParkingZoneDto::getName);
+
         add(number,car,zoneName,getButtonsLayout());
         setParkingPlace(new ParkingPlaceDto());
 
@@ -51,6 +48,16 @@ public class ParkingPlaceForm extends FormLayout {
     public void setParkingPlace(ParkingPlaceDto parkingPlace){
         binder.readBean(parkingPlace);
         this.parkingPlace = parkingPlace;
+    }
+
+    public void setCar(List<CarDto> cars){
+        this.car.setItems(cars);
+        this.car.setItemLabelGenerator(CarDto::getPlateNumber);
+    }
+
+    public void setZones(List<ParkingZoneDto> zones){
+        this.zoneName.setItems(zones);
+        this.zoneName.setItemLabelGenerator(ParkingZoneDto::getName);
     }
 
     private HorizontalLayout getButtonsLayout(){

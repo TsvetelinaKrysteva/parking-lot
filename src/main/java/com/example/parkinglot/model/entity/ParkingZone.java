@@ -22,10 +22,10 @@ public class ParkingZone extends BaseEntity{
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "parking_id")
-//    @JsonIgnore
+
     private Parking parking;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "parkingZone", fetch = FetchType.EAGER)
+    @OneToMany(orphanRemoval = true, mappedBy = "parkingZone", fetch = FetchType.EAGER)
     private List<ParkingPlace> parkingPlaces;
 
     public ParkingZone() {
@@ -66,9 +66,6 @@ public class ParkingZone extends BaseEntity{
         pPlaces.add(parkingPlace);
         this.setParkingPlaces(pPlaces);
 
-    }
-    public void removePlace(ParkingPlace parkingPlace){
-        this.getParkingPlaces().remove(parkingPlace);
     }
 
 

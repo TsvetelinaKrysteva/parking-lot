@@ -17,8 +17,7 @@ import java.util.function.Consumer;
 
 public class CarForm extends FormLayout {
     private TextField plateNumber = new TextField("plateNumber");
-//    private TextField parkingPlaceNumber = new TextField("placeNumber");
-//    private TextField parkingZoneName = new TextField("zoneName");
+
 
     private ComboBox<ParkingPlaceDto> places = new ComboBox<>("places");
     private Button save  = new Button("save");
@@ -29,14 +28,12 @@ public class CarForm extends FormLayout {
     private CarDto car;
     private Binder<CarDto> binder = new BeanValidationBinder<>(CarDto.class);
 
-    public CarForm(List<ParkingPlaceDto> placesList, Consumer<CarDto> onSaveHandler, Consumer<CarDto> deleteHandler){
+    public CarForm(Consumer<CarDto> onSaveHandler, Consumer<CarDto> deleteHandler){
         binder.bindInstanceFields(this);
         this.onSaveHandler = onSaveHandler;
         this.deleteHandler = deleteHandler;
         binder.forField(places).bind(CarDto::getParkingPlaceDto, CarDto::setParkingPlaceDto);
         binder.forField(plateNumber).bind(CarDto::getPlateNumber, CarDto::setPlateNumber);
-        places.setItems(placesList);
-        places.setItemLabelGenerator(ParkingPlaceDto::getNumber);
         add(plateNumber, places, getButtonsLayout());
         setCar(new CarDto());
 
@@ -47,6 +44,10 @@ public class CarForm extends FormLayout {
     public void setCar(CarDto car){
         binder.readBean(car);
         this.car = car;
+    }
+    public void setPlaces(List<ParkingPlaceDto> places){
+        this.places.setItems(places);
+        this.places.setItemLabelGenerator(ParkingPlaceDto::getNumber);
     }
 
     private HorizontalLayout getButtonsLayout(){

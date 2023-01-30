@@ -3,10 +3,12 @@ package com.example.parkinglot.view;
 import com.example.parkinglot.model.dto.CarDto;
 import com.example.parkinglot.model.dto.CarFilterDto;
 
+import com.example.parkinglot.presenter.CarPresenter;
 import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingPlaceService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -16,25 +18,29 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.Theme;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.List;
+
 
 @Route(value = "/cars", layout = MainLayout.class)
 
 @PageTitle("Car | Vaadin CRM")
 public class CarView extends VerticalLayout {
     private Grid<CarDto> carGrid = new Grid<>(CarDto.class);
-    private CarService carService;
-    private ParkingPlaceService parkingPlaceService;
     private Button add = new Button("add car");
     private TextField filter = new TextField("Filter by plate number");
     private CarForm form;
 
+    private CarPresenter carPresenter;
 
-    public CarView(ParkingPlaceService parkingPlaceService, CarService carService){
-        this.parkingPlaceService = parkingPlaceService;
-        this.carService = carService;
+
+    public CarView(CarPresenter carPresenter){
+        this.carPresenter = carPresenter;
+        this.carPresenter.setCarView(this);
+
         configure();
-        carGrid.setItems(carService.getAllCars());
-        form = new CarForm(parkingPlaceService.getParkingPlaces(), this::saveCar, this::deleteCar);
+
+        form = new CarForm(this::saveCar, this::deleteCar);
+        carPresenter.placeDtos(form);
         add.addClickListener(event -> form.setCar(new CarDto()));
         carGrid.asSingleSelect().addValueChangeListener(event -> form.setCar(event.getValue()));
         filter.setValueChangeMode(ValueChangeMode.LAZY);
@@ -43,24 +49,18 @@ public class CarView extends VerticalLayout {
             onFilterChange();
         });
         add(filter, add, getContent());
-        updateGrid(new CarFilterDto());
+        carPresenter.onViewInit();
 
     }
 
 
     private void saveCar(CarDto carDto){
-        if(carDto.getId()!=null){
-            carService.updateCar(carDto);
-            updateGrid(new CarFilterDto());
-        }else{
-            carService.createCar(carDto);
-            updateGrid(new CarFilterDto());
-        }
+        carPresenter.onSaveCar(carDto);
+
 
     }
     private void deleteCar(CarDto carDto){
-        carService.deleteCar(carDto.getId());
-        updateGrid(new CarFilterDto());
+        carPresenter.onDeleteCar(carDto);
     }
     private void configure(){
         setSizeFull();
@@ -71,19 +71,13 @@ public class CarView extends VerticalLayout {
         carGrid.addColumn(car -> car.getParkingZoneDot().getName()).setHeader("Zone");
 
     }
-    public void updateGrid(CarFilterDto carFilterDto){
-        if (StringUtils.isBlank(carFilterDto.getPlateNumber())) {
-            carGrid.setItems(carService.getAllCars());
-        } else {
-            carGrid.setItems(carService.findByFilter(carFilterDto));
-        }
+    public void updateGrid(List<CarDto> carDtos){
+        carGrid.setItems(carDtos);
     }
     private HorizontalLayout getContent() {
-
         HorizontalLayout content = new HorizontalLayout();
         form.setWidth("30em");
         content.add(carGrid, form);
-
         content.setSizeFull();
         return content;
     }
@@ -91,11 +85,14 @@ public class CarView extends VerticalLayout {
         CarFilterDto carFilterDto = new CarFilterDto();
         String plate = filter.getValue();
         if(StringUtils.isBlank(plate)){
-            updateGrid(new CarFilterDto());
+            carPresenter.onFilterChange(carFilterDto);
             return;
         }
         carFilterDto.setPlateNumber(plate);
-        updateGrid(carFilterDto);
+        carPresenter.onFilterChange(carFilterDto);
 
+    }
+    public void showErrorMessage(String message) {
+        Notification.show(message , 5000, Notification.Position.MIDDLE);
     }
 }

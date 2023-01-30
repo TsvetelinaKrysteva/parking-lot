@@ -18,10 +18,10 @@ public class ParkingPlace extends BaseEntity {
     private int number;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "parking_zone_id", nullable = false)
+    @JoinColumn(name = "parking_zone_id")
     private ParkingZone parkingZone;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "parkingPlace")
     private Car car;
 
     public ParkingPlace() {
@@ -60,6 +60,9 @@ public class ParkingPlace extends BaseEntity {
     public void setCar(Car car) {
         this.car = car;
     }
+
+
+
 
 }
 

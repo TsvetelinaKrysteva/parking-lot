@@ -1,7 +1,9 @@
 package com.example.parkinglot.view;
 
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.example.parkinglot.model.dto.CarFilterDto;
@@ -10,14 +12,21 @@ import com.example.parkinglot.model.dto.ParkingFilterDto;
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingZoneDto;
 import com.example.parkinglot.model.dto.ParkingZoneFilterDto;
+import com.example.parkinglot.model.entity.ParkingZone;
 import com.example.parkinglot.presenter.ParkingZonePresenter;
 import com.example.parkinglot.service.ParkingService;
 import com.example.parkinglot.service.ParkingZoneService;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.HeaderRow;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
+import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
@@ -30,101 +39,156 @@ import org.apache.commons.lang3.StringUtils;
 @PageTitle("ParkingZones | Vaadin CRM")
 public class ParkingZoneView extends VerticalLayout {
 	private Grid<ParkingZoneDto> parkingZonesGrid = new Grid<>(ParkingZoneDto.class);
-	private TextField nameFilter = new TextField("Filter by name");
+//	private TextField nameFilter = new TextField("Filter by name");
 //	private TextField placeFilter = new TextField("Filter by place");
 	private ParkingZoneService parkingZoneService;
 	private ParkingService parkingService;
 	private ParkingZoneForm parkingZoneForm;
 	private Button addZone  = new Button("Add zone");
+	private ParkingZoneFilter parkingZoneGridFilter;
 
 	private ParkingZonePresenter parkingZonePresenter;
-	
+
+
 	public ParkingZoneView(ParkingZonePresenter parkingZonePresenter) {
 		this.parkingZonePresenter = parkingZonePresenter;
 		this.parkingZonePresenter.setParkingZoneView(this);
-//		this.parkingZoneService = parkingZoneService;
-//		this.parkingService = parkingService;
 
 		configuration();
-		parkingZonesGrid.setItems(parkingZoneService.getParkingZones());
 
-		nameFilter.setValueChangeMode(ValueChangeMode.LAZY);
-		nameFilter.addValueChangeListener(event -> {
-			onFilterChange();
-		});
+//		nameFilter.setValueChangeMode(ValueChangeMode.LAZY);
+//		nameFilter.addValueChangeListener(event -> {
+//			onFilterChange();
+//		});
 
+		parkingZonePresenter.onViewInit();
 
-		parkingZoneForm = new ParkingZoneForm(parkingService.getParkings(), this::saveZone, this::deleteZone);
+		parkingZoneForm = new ParkingZoneForm(this::saveZone, this::deleteZone);
+		parkingZonePresenter.parkingDtos(parkingZoneForm);
+
 		addZone.addClickListener(event -> parkingZoneForm.setParkingZone(new ParkingZoneDto()));
 		parkingZonesGrid.asSingleSelect().addValueChangeListener(event -> parkingZoneForm.setParkingZone(event.getValue()));
-		add(nameFilter, addZone, getContent());
-		updateGrid(new ParkingZoneFilterDto());
+		add(addZone, getContent());
+
+		parkingZonePresenter.onViewInit();
 
 	}
 
 
-	private void saveZone(ParkingForm.SaveEvent saveEvent){
-		if(parkingZoneDto.getId()!=null){
-			parkingZoneService.updateParkingZone(parkingZoneDto);
-			updateGrid(new ParkingZoneFilterDto());
-		}else{
-			parkingZoneService.createParkingZone(parkingZoneDto);
-			updateGrid(new ParkingZoneFilterDto());
-		}
+
+	private void saveZone(ParkingZoneDto parkingZoneDto){
+		parkingZonePresenter.onSaveZone(parkingZoneDto);
 	}
 
-	private void deleteZone(ParkingForm.DeleteEvent deleteEvent){
-		parkingZoneService.deleteParkingZone(parkingZoneDto.getId());
-		updateGrid(new ParkingZoneFilterDto());
+	private void deleteZone(ParkingZoneDto parkingZoneDto){
+		parkingZonePresenter.onDeleteZone(parkingZoneDto);
 	}
 
 	private void configuration(){
 		setSizeFull();
 		parkingZonesGrid.setSizeFull();
 		parkingZonesGrid.removeAllColumns();
-		parkingZonesGrid.addColumns(  "name");
-		parkingZonesGrid.addColumn(parkingZoneDto -> parkingZoneDto.getPlaces()
+		Grid.Column<ParkingZoneDto> names = parkingZonesGrid.addColumn(  "name");
+		Grid.Column<ParkingZoneDto> places = parkingZonesGrid.addColumn(parkingZoneDto -> parkingZoneDto.getPlaces()
 				.stream()
 				.map(ParkingPlaceDto::getNumber)
 				.collect(Collectors.joining(", "))).setHeader("places");
 
 
 
-		parkingZonesGrid.addColumn(parkingZone -> parkingZone.getParkingDto().getName()).setHeader("parking");
-//		parkingZonesGrid.getHeaderRows().clear();
-//		HeaderRow header =  parkingZonesGrid.appendHeaderRow();
-//		header.getCell(null).set
+		Grid.Column<ParkingZoneDto> parkings = parkingZonesGrid.addColumn(parkingZone -> parkingZone.getParkingDto().getName()).setHeader("parking");
 
+		ListDataProvider<ParkingZoneDto> listDataProvider = new ListDataProvider<>(new ArrayList<>());
+		parkingZoneGridFilter = new ParkingZoneFilter();
+		parkingZoneGridFilter.setDataProvider(listDataProvider);
+		parkingZonesGrid.setDataProvider(listDataProvider);
+
+		HeaderRow header = parkingZonesGrid.appendHeaderRow();
+		header.getCell(names).setComponent(createFilterHeaderCell("", name -> this.parkingZoneGridFilter.setName(name)));
+		header.getCell(places).setComponent(createFilterHeaderCell("", place -> this.parkingZoneGridFilter.setPlaceNumber(place)));
+		header.getCell(parkings).setComponent(createFilterHeaderCell("", parkingName -> this.parkingZoneGridFilter.setParkingName(parkingName)));
 
 	}
-	private HorizontalLayout getContent() {
 
+	private HorizontalLayout getContent() {
 		HorizontalLayout content = new HorizontalLayout();
 		parkingZoneForm.setWidth("30em");
 		content.add(parkingZonesGrid, parkingZoneForm);
-
 		content.setSizeFull();
 		return content;
 	}
-	public void updateGrid(List<ParkingZoneDto> parkingZoneDtos) {
-		parkingZonesGrid.setItems(parkingZoneDtos);
+	public void updateGrid(ListDataProvider<ParkingZoneDto> listDataProvider) {
+		parkingZonesGrid.setDataProvider(listDataProvider);
+		parkingZoneGridFilter.setDataProvider(listDataProvider);
 	}
-//		if (StringUtils.isBlank(parkingZoneFilterDto.getName())) {
-//			parkingZonesGrid.setItems(parkingZoneService.getParkingZones());
-//		} else {
-//			parkingZonesGrid.setItems(parkingZoneService.filter((parkingZoneFilterDto)));
-//		}
-//	}
 
-	private void onFilterChange(){
-		ParkingZoneFilterDto parkingZoneFilterDto = new ParkingZoneFilterDto();
-		String name = nameFilter.getValue();
-		if(StringUtils.isBlank(name)){
-			updateGrid(new ParkingZoneFilterDto());
-			return;
+
+
+	public void showErrorMessage(String message) {
+		Notification.show(message , 5000, Notification.Position.MIDDLE);
+	}
+
+
+
+	private static Component createFilterHeaderCell(String label, Consumer<String> valueChangeListener){
+		TextField textField = new TextField();
+		textField.setValueChangeMode(ValueChangeMode.EAGER);
+		textField.setClearButtonVisible(true);
+		textField.addThemeVariants(TextFieldVariant.LUMO_SMALL);
+		textField.setWidthFull();
+		textField.addValueChangeListener( event -> valueChangeListener.accept(event.getValue()));
+		VerticalLayout layout = new VerticalLayout(textField);
+		return layout;
+	}
+
+	private static class ParkingZoneFilter {
+
+		private ListDataProvider<ParkingZoneDto> dataProvider;
+		private String name;
+		private String placeNumber;
+		private String parkingName;
+
+		public void setName(String name) {
+			this.name = name;
+			this.dataProvider.refreshAll();
 		}
-		parkingZoneFilterDto.setName(name);
-		updateGrid(parkingZoneFilterDto);
+		public void setPlaceNumber(String placeNumber){
+			this.placeNumber = placeNumber;
+			this.dataProvider.refreshAll();
+		}
+		public void setParkingName(String parkingName){
+			this.parkingName = parkingName;
+			this.dataProvider.refreshAll();
+		}
+
+		public void setDataProvider(ListDataProvider<ParkingZoneDto> dataProvider) {
+			this.dataProvider = dataProvider;
+			this.dataProvider.addFilter(this::test);
+		}
+
+
+		private boolean test(ParkingZoneDto parkingZoneDto){
+			boolean matchesPlaceNumber = matches(parkingZoneDto.getPlaces()
+					.stream()
+					.map(ParkingPlaceDto::getNumber)
+					.collect(Collectors.joining(",")), placeNumber);
+
+			boolean matchesName = matches(parkingZoneDto.getName(), name);
+			boolean matchesParkingName = matches(parkingZoneDto.getParkingDto().getName(), parkingName);
+
+			return matchesName && matchesPlaceNumber && matchesParkingName;
+		}
+
+		private boolean matches(String value, String searchTerm){
+			if(StringUtils.isBlank(searchTerm)){
+				return true;
+			}
+			if(value!=null){
+				return value.toLowerCase().contains(searchTerm.toLowerCase());
+			}
+			return true;
+		}
+
 
 	}
 

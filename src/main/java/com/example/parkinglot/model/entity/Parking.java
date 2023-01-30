@@ -20,7 +20,7 @@ public class Parking extends BaseEntity{
     private String name;
 
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "parking")
+    @OneToMany(orphanRemoval = true, mappedBy = "parking")
     private List<ParkingZone> zones;
 
     @NotNull

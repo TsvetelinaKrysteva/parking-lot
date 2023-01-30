@@ -66,8 +66,6 @@ public class ParkingView extends VerticalLayout {
 		HorizontalLayout content = new HorizontalLayout();
 		parkingForm.setWidth("30em");
 		content.add(parkingGrid, parkingForm);
-		content.setFlexGrow(1, parkingGrid);
-		content.setFlexGrow(3, parkingForm);
 		content.setSizeFull();
 		return content;
 	}
