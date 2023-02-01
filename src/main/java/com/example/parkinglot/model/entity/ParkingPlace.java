@@ -1,7 +1,6 @@
 package com.example.parkinglot.model.entity;
 
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -23,6 +22,8 @@ public class ParkingPlace extends BaseEntity {
 
     @OneToOne(mappedBy = "parkingPlace")
     private Car car;
+
+
 
     public ParkingPlace() {
     }

@@ -14,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,7 +56,11 @@ public class ParkingZoneService {
         return convertToDto(parkingZoneRepository.findById(id).orElseThrow(() -> new RuntimeException("Such zone doesn't exist!")));
     }
     public List<ParkingZoneDto> getZonesByParkingId(Long id){
-        return (List<ParkingZoneDto>) convertToDto(parkingZoneRepository.findByParkingId(id).orElseThrow( () -> new RuntimeException("Not found")));
+
+        return parkingZoneRepository.findByParkingId(id).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+//        return (List<ParkingZoneDto>) convertToDto(parkingZoneRepository.findByParkingId(id).orElseThrow( () -> new RuntimeException("Not found")));
     }
 
    public ParkingZone getZoneByCarId(Long id){
@@ -122,4 +124,7 @@ public class ParkingZoneService {
         return parkingZone;
     }
 
+    public void truncateParkingZoneTable(){
+        parkingZoneRepository.deleteAll();
+    }
 }

@@ -6,20 +6,16 @@ import com.example.parkinglot.model.dto.ParkingDto;
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingPlaceFilterDto;
 import com.example.parkinglot.model.dto.ParkingZoneDto;
-
-import com.example.parkinglot.model.entity.Car;
 import com.example.parkinglot.model.entity.Parking;
 import com.example.parkinglot.model.entity.ParkingPlace;
 import com.example.parkinglot.model.entity.ParkingZone;
 import com.example.parkinglot.service.repository.CarRepository;
 import com.example.parkinglot.service.repository.ParkingPlaceRepository;
-
 import com.example.parkinglot.service.repository.ParkingZoneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -91,7 +87,15 @@ public class ParkingPlaceService {
     }
 
     public void deleteParkingPlace(Long id){
+        ParkingPlace parkingPlace = parkingPlaceRepository.findById(id).orElseThrow();
+//        if(parkingPlace.getCar()!=null){
+//
+//            Car car = carRepository.findByParkingPlaceId(parkingPlace.getId()).orElseThrow();
+//            car.setParkingPlace(null);
+//            parkingPlace.setCar(null);
+//        }
 
+//        ParkingPlace parkingPlace1 = parkingPlaceRepository.findById(id).orElseThrow();
         parkingPlaceRepository.deleteById(id);
     }
 
@@ -141,6 +145,9 @@ public class ParkingPlaceService {
 
         return parkingPlace;
 
+    }
+    public void truncateParkingPlaceTable(){
+        parkingPlaceRepository.deleteAll();
     }
 
 }

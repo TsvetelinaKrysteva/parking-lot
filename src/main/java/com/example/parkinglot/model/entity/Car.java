@@ -1,15 +1,12 @@
 package com.example.parkinglot.model.entity;
 
 
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-
 
 
 @Entity
@@ -22,7 +19,7 @@ public class Car extends BaseEntity {
     private String plateNumber;
 
     @OneToOne
-    @JoinColumn(name = "parkingPlace")
+    @JoinColumn(name = "parking_place_id")
     private ParkingPlace parkingPlace;
 
 
@@ -34,7 +31,6 @@ public class Car extends BaseEntity {
         this.plateNumber = plateNumber;
         this.parkingPlace = parkingPlace;
     }
-
 
 
     public String getPlateNumber() {

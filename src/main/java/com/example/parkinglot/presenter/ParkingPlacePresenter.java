@@ -1,10 +1,7 @@
 package com.example.parkinglot.presenter;
 
-import com.example.parkinglot.model.dto.CarDto;
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingPlaceFilterDto;
-import com.example.parkinglot.model.dto.ParkingZoneDto;
-
 import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingPlaceService;
 import com.example.parkinglot.service.ParkingZoneService;
@@ -16,8 +13,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Scope("prototype")
 @Component

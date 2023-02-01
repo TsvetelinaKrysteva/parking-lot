@@ -6,14 +6,12 @@ import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingPlaceService;
 import com.example.parkinglot.view.CarForm;
 import com.example.parkinglot.view.CarView;
-import com.example.parkinglot.view.ParkingPlaceView;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Scope("prototype")
 @Component

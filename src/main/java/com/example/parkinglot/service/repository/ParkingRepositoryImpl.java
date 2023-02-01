@@ -1,7 +1,8 @@
 package com.example.parkinglot.service.repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.example.parkinglot.model.dto.ParkingFilterDto;
+import com.example.parkinglot.model.entity.Parking;
+import com.example.parkinglot.model.entity.ParkingZone;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -11,10 +12,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
-import com.example.parkinglot.model.dto.ParkingFilterDto;
-import com.example.parkinglot.model.entity.Parking;
-import com.example.parkinglot.model.entity.ParkingZone;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ParkingRepositoryImpl implements ParkingRepositoryCustom {
 

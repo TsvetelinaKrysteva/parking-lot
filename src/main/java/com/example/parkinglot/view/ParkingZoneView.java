@@ -1,24 +1,13 @@
 package com.example.parkinglot.view;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import com.example.parkinglot.model.dto.CarFilterDto;
-import com.example.parkinglot.model.dto.ParkingDto;
-import com.example.parkinglot.model.dto.ParkingFilterDto;
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingZoneDto;
-import com.example.parkinglot.model.dto.ParkingZoneFilterDto;
-import com.example.parkinglot.model.entity.ParkingZone;
 import com.example.parkinglot.presenter.ParkingZonePresenter;
 import com.example.parkinglot.service.ParkingService;
 import com.example.parkinglot.service.ParkingZoneService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.notification.Notification;
@@ -30,8 +19,11 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.theme.Theme;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 
 @Route(value = "/parking-zones", layout = MainLayout.class)

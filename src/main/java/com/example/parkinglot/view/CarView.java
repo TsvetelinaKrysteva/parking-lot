@@ -2,10 +2,7 @@ package com.example.parkinglot.view;
 
 import com.example.parkinglot.model.dto.CarDto;
 import com.example.parkinglot.model.dto.CarFilterDto;
-
 import com.example.parkinglot.presenter.CarPresenter;
-import com.example.parkinglot.service.CarService;
-import com.example.parkinglot.service.ParkingPlaceService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.notification.Notification;
@@ -15,7 +12,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.theme.Theme;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -67,8 +63,8 @@ public class CarView extends VerticalLayout {
         carGrid.setSizeFull();
         carGrid.removeAllColumns();
         carGrid.addColumn("plateNumber");
-        carGrid.addColumn(car -> car.getParkingPlaceDto().getNumber()).setHeader("Place");
-        carGrid.addColumn(car -> car.getParkingZoneDot().getName()).setHeader("Zone");
+        carGrid.addColumn(car-> car.getParkingPlaceDto() != null ? car.getParkingPlaceDto().getNumber() : "").setHeader("Place");
+        carGrid.addColumn(car -> car.getParkingZoneDot() != null ? car.getParkingZoneDot().getName() : "").setHeader("Zone");
 
     }
     public void updateGrid(List<CarDto> carDtos){

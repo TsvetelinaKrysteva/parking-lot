@@ -1,22 +1,17 @@
 package com.example.parkinglot.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.transaction.Transactional;
-
-import com.example.parkinglot.model.dto.ParkingZoneDto;
-import com.example.parkinglot.model.entity.ParkingZone;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.example.parkinglot.model.dto.ParkingDto;
 import com.example.parkinglot.model.dto.ParkingFilterDto;
 import com.example.parkinglot.model.entity.Parking;
 import com.example.parkinglot.model.entity.ParkingPlace;
 import com.example.parkinglot.service.repository.ParkingPlaceRepository;
 import com.example.parkinglot.service.repository.ParkingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ParkingService {
@@ -90,6 +85,7 @@ public class ParkingService {
         }else{
             parking = new Parking();
         }
+
         parking.setName(parkingDto.getName());
         parking.setCity(parkingDto.getCity());
         parking.setStreet(parkingDto.getStreet());
@@ -97,4 +93,7 @@ public class ParkingService {
         return parking;
     }
 
+    public void truncateParkingTable(){
+        parkingRepository.deleteAll();
+    }
 }
