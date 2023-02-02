@@ -1,6 +1,8 @@
 package com.example.parkinglot.model.dto;
 
 
+import java.util.Objects;
+
 public class CarDto {
 
 
@@ -10,15 +12,19 @@ public class CarDto {
     private ParkingZoneDto parkingZoneDot;
 
 
+    private UserDto user;
+
+
 
     public CarDto() {
     }
 
-    public CarDto(String plateNumber, ParkingPlaceDto parkingPlaceDto, ParkingZoneDto parkingZoneDto, Long id) {
+    public CarDto(String plateNumber, ParkingPlaceDto parkingPlaceDto, ParkingZoneDto parkingZoneDto, UserDto user, Long id) {
         this.id = id;
         this.plateNumber = plateNumber;
         this.parkingPlaceDto = parkingPlaceDto;
         this.parkingZoneDot = parkingZoneDto;
+        this.user = user;
 
 //        this.parkingPlaceNum = parkingPlace;
     }
@@ -53,6 +59,29 @@ public class CarDto {
     public void setId(Long id) {
         this.id = id;
     }
+    public UserDto getUser() {
+        return user;
+    }
 
+    public void setUser(UserDto user) {
+        this.user = user;
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CarDto carDto = (CarDto) o;
+        return Objects.equals(id, carDto.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return plateNumber;
+    }
 }

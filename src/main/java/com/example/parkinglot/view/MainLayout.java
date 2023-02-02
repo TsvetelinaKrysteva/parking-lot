@@ -24,7 +24,8 @@ public class MainLayout extends AppLayout {
         RouterLink linkPlace = new RouterLink("Place", ParkingPlaceView.class);
         RouterLink linkPZone = new RouterLink("Zone", ParkingZoneView.class);
         RouterLink linkCar = new RouterLink("Car", CarView.class);
-        VerticalLayout vList = new VerticalLayout(linkParking, linkPlace, linkPZone, linkCar);
+        RouterLink linkUser = new RouterLink("User", UserView.class);
+        VerticalLayout vList = new VerticalLayout(linkParking, linkPlace, linkPZone, linkCar, linkUser);
         addToDrawer(vList);
 
     }

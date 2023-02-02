@@ -4,12 +4,15 @@ import com.example.parkinglot.model.dto.CarDto;
 import com.example.parkinglot.model.dto.CarFilterDto;
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingZoneDto;
+import com.example.parkinglot.model.dto.UserDto;
 import com.example.parkinglot.model.entity.Car;
 import com.example.parkinglot.model.entity.ParkingPlace;
 import com.example.parkinglot.model.entity.ParkingZone;
+import com.example.parkinglot.model.entity.User;
 import com.example.parkinglot.service.repository.CarRepository;
 import com.example.parkinglot.service.repository.ParkingPlaceRepository;
 import com.example.parkinglot.service.repository.ParkingZoneRepository;
+import com.example.parkinglot.service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +31,8 @@ public class CarService {
 
     @Autowired
     ParkingZoneRepository parkingZoneRepository;
+    @Autowired
+    UserRepository userRepository;
 
 
 
@@ -98,6 +103,7 @@ public class CarService {
     public CarDto convertToDto(Car car){
         ParkingPlaceDto parkingPlaceDto = null;
         ParkingZoneDto parkingZoneDto = null;
+        UserDto userDto = null;
         if(car.getParkingPlace()!=null){
             ParkingPlace parkingPlace = parkingPlaceRepository.findById(car.getParkingPlace().getId()).orElseThrow();
             parkingPlaceDto = new ParkingPlaceDto();
@@ -108,23 +114,34 @@ public class CarService {
             parkingZoneDto.setId(parkingZone.getId());
             parkingZoneDto.setName(parkingZone.getName());
         }
+        if(car.getUser()!= null){
+            userDto = new UserDto();
+            User user = userRepository.findById(car.getUser().getId()).orElseThrow();
+            userDto.setId(user.getId());
+            userDto.setName(user.getName());
+        }
 
-        return new CarDto(car.getPlateNumber(), parkingPlaceDto, parkingZoneDto, car.getId());
+        return new CarDto(car.getPlateNumber(), parkingPlaceDto, parkingZoneDto, userDto, car.getId());
     }
 
     public Car convertToCar(CarDto carDto){
         Car car = new Car();
         ParkingPlace parkingPlace = null;
+        User user = null;
         if (carDto.getParkingPlaceDto()!=null){
             parkingPlace = parkingPlaceRepository.findById(carDto.getParkingPlaceDto().getId()).orElseThrow();
         }
+        if(carDto.getUser()!= null){
+            user = userRepository.findById(car.getUser().getId()).orElseThrow();
 
+        }
         if(carDto.getId() != null){
             car = carRepository.findById(carDto.getId()).orElseThrow();
         }
 
         car.setPlateNumber(carDto.getPlateNumber());
         car.setParkingPlace(parkingPlace);
+        car.setUser(user);
 //        parkingPlace.setCar(car);
         return car;
 

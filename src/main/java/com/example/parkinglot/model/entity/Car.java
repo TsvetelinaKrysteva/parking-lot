@@ -4,6 +4,7 @@ package com.example.parkinglot.model.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -23,13 +24,19 @@ public class Car extends BaseEntity {
     private ParkingPlace parkingPlace;
 
 
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public Car() {
 
     }
 
-    public Car(String plateNumber, ParkingPlace parkingPlace) {
+    public Car(String plateNumber, ParkingPlace parkingPlace, User user) {
         this.plateNumber = plateNumber;
         this.parkingPlace = parkingPlace;
+        this.user = user;
     }
 
 
@@ -49,6 +56,12 @@ public class Car extends BaseEntity {
     public void setParkingPlace(ParkingPlace parkingPlace) {
         this.parkingPlace = parkingPlace;
     }
+    public User getUser() {
+        return user;
+    }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
 
 }
