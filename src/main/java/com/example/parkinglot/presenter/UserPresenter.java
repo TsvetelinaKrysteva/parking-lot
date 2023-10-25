@@ -1,5 +1,6 @@
 package com.example.parkinglot.presenter;
 
+import com.example.parkinglot.model.dto.CarDto;
 import com.example.parkinglot.model.dto.UserDto;
 import com.example.parkinglot.model.dto.UserFilterDto;
 import com.example.parkinglot.service.CarService;
@@ -35,14 +36,23 @@ public class UserPresenter {
         userView.updateGrid(listDataProvider);
     }
     public void onSaveUser(UserDto userDto){
-        if(StringUtils.isBlank(userDto.getName())){
+        if(StringUtils.isNotBlank(userDto.getName())){
+            for(CarDto carDto: userDto.getCars()){
+                if(carDto.getUser()!=null && !carDto.getUser().equals(userDto)){
+                    this.userView.showErrorMessage(String.format("Car %s belongs to user %s! PLease choose another one!", carDto.getPlateNumber(), carDto.getUser().getName()));
+                    return;
+                }
+            }
+            if(userDto.getId()!=null){
+                userService.updateUser(userDto);
+            }else{
+                userService.createUser(userDto);
+            }
+
+        }else{
             this.userView.showErrorMessage("Please fill in the required fields!(name)");
         }
-        if(userDto.getId()!=null){
-            userService.updateUser(userDto);
-        }else{
-            userService.createUser(userDto);
-        }
+
         onFilterChange(new UserFilterDto());
     }
     public void onDeleteUser(UserDto userDto){

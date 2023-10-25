@@ -1,8 +1,6 @@
 package com.example.parkinglot.view;
 
 import com.example.parkinglot.model.dto.CarDto;
-import com.example.parkinglot.model.dto.ParkingPlaceDto;
-import com.example.parkinglot.model.dto.ParkingZoneDto;
 import com.example.parkinglot.model.dto.UserDto;
 import com.example.parkinglot.presenter.UserPresenter;
 import com.vaadin.flow.component.Component;
@@ -59,7 +57,7 @@ public class UserView extends VerticalLayout{
         usersGrid.setSizeFull();
         usersGrid.removeAllColumns();
         Grid.Column<UserDto> names = usersGrid.addColumn("name");
-        Grid.Column<UserDto> cars = usersGrid.addColumn(userDto -> !userDto.getCar().isEmpty() ? userDto.getCar()
+        Grid.Column<UserDto> cars = usersGrid.addColumn(userDto -> !userDto.getCars().isEmpty() ? userDto.getCars()
                 .stream()
                 .map(CarDto::getPlateNumber)
                 .collect(Collectors.joining(", ")) : "").setHeader("cars");
@@ -130,7 +128,7 @@ public class UserView extends VerticalLayout{
 
 
         private boolean test(UserDto userDto){
-            boolean matchesPlaceNumber = matches(userDto.getCar()
+            boolean matchesPlaceNumber = matches(userDto.getCars()
                     .stream()
                     .map(CarDto::getPlateNumber)
                     .collect(Collectors.joining(",")), car);

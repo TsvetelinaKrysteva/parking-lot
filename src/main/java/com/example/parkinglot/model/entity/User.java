@@ -12,15 +12,15 @@ public class User extends BaseEntity{
     private String name;
 
     @OneToMany(mappedBy = "user")
-    private List<Car> car;
+    private List<Car> cars;
 
 
     public User() {
     }
 
-    public User(String name, List<Car> car) {
+    public User(String name, List<Car> cars) {
         this.name = name;
-        this.car = car;
+        this.cars = cars;
     }
 
     public String getName() {
@@ -31,14 +31,14 @@ public class User extends BaseEntity{
         this.name = name;
     }
 
-    public List<Car> getCar() {
-        return car;
+    public List<Car> getCars() {
+        return cars;
     }
 
-    public void setCar(List<Car> car) {
-        this.car = car;
+    public void setCars(List<Car> car) {
+        this.cars = car;
     }
     public void addCar(Car car){
-        this.car.add(car);
+        this.cars.add(car);
     }
 }

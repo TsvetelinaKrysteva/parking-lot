@@ -1,13 +1,9 @@
 package com.example.parkinglot.view;
 
 import com.example.parkinglot.model.dto.CarDto;
-import com.example.parkinglot.model.dto.ParkingDto;
-import com.example.parkinglot.model.dto.ParkingZoneDto;
 import com.example.parkinglot.model.dto.UserDto;
-import com.example.parkinglot.model.entity.User;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.listbox.MultiSelectListBox;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -15,7 +11,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.selection.MultiSelect;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -38,7 +33,7 @@ public class UserForm extends FormLayout {
         this.onSaveHandler = onSaveHandler;
         this.deleteHandler = deleteHandler;
         binder.forField(name).bind(UserDto::getName, UserDto::setName);
-        binder.forField(cars).bind(UserDto::getCar, UserDto::setCar);
+        binder.forField(cars).bind(UserDto::getCars, UserDto::setCars);
         add(name, cars, getButtonsLayout());
         setUser(new UserDto());
     }

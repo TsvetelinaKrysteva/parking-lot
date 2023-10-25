@@ -4,9 +4,11 @@ import com.example.parkinglot.model.dto.ParkingDto;
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingZoneDto;
 import com.example.parkinglot.model.dto.ParkingZoneFilterDto;
+import com.example.parkinglot.model.entity.Car;
 import com.example.parkinglot.model.entity.Parking;
 import com.example.parkinglot.model.entity.ParkingPlace;
 import com.example.parkinglot.model.entity.ParkingZone;
+import com.example.parkinglot.service.repository.CarRepository;
 import com.example.parkinglot.service.repository.ParkingPlaceRepository;
 import com.example.parkinglot.service.repository.ParkingRepository;
 import com.example.parkinglot.service.repository.ParkingZoneRepository;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,11 +29,8 @@ public class ParkingZoneService {
     @Autowired
     ParkingPlaceRepository parkingPlaceRepository;
     @Autowired
-    ParkingPlaceService parkingPlaceService;
-//    @Autowired
-//    ParkingZoneService parkingZoneService;
-    @Autowired
-    ParkingService parkingService;
+    CarRepository carRepository;
+
 
 
     public List<ParkingZoneDto> filter(ParkingZoneFilterDto parkingZoneFilterDto){
@@ -94,14 +94,33 @@ public class ParkingZoneService {
     }
 
     public void deleteParkingZone(Long id) {
-
+        ParkingZone parkingZone = parkingZoneRepository.findById(id).orElseThrow();
+        if(!parkingZone.getParkingPlaces().isEmpty()){
+            for(ParkingPlace place : parkingZone.getParkingPlaces()){
+                if(place.getCar()!=null){
+                    Car car = place.getCar();
+                    car.setParkingPlace(null);
+                    carRepository.save(car);
+                }
+                parkingPlaceRepository.deleteById(place.getId());
+//                place.setParkingZone(null);
+//                parkingPlaceRepository.save(place);
+            }
+        }
         parkingZoneRepository.deleteById(id);
     }
 
     public ParkingZoneDto convertToDto(ParkingZone parkingZone){
         Parking parking = parkingZone.getParking();
-        List<ParkingPlaceDto> places= (List<ParkingPlaceDto>) parkingZone.getParkingPlaces().stream().map(p -> parkingPlaceService.convertToDto(p)).collect(Collectors.toList());
-
+        List<ParkingPlaceDto> places = new ArrayList<>();
+        if(!parkingZone.getParkingPlaces().isEmpty()){
+            for(ParkingPlace place : parkingZone.getParkingPlaces()){
+                ParkingPlaceDto placeDto = new ParkingPlaceDto();
+                placeDto.setId(place.getId());
+                placeDto.setNumber(Integer.toString(place.getNumber()));
+                places.add(placeDto);
+            }
+        }
         ParkingDto parkingDto = new ParkingDto();
         parkingDto.setId(parking.getId());
         parkingDto.setName(parking.getName());

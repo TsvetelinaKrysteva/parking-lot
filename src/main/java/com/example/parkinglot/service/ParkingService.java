@@ -2,8 +2,11 @@ package com.example.parkinglot.service;
 
 import com.example.parkinglot.model.dto.ParkingDto;
 import com.example.parkinglot.model.dto.ParkingFilterDto;
+import com.example.parkinglot.model.entity.Car;
 import com.example.parkinglot.model.entity.Parking;
 import com.example.parkinglot.model.entity.ParkingPlace;
+import com.example.parkinglot.model.entity.ParkingZone;
+import com.example.parkinglot.service.repository.CarRepository;
 import com.example.parkinglot.service.repository.ParkingPlaceRepository;
 import com.example.parkinglot.service.repository.ParkingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +24,8 @@ public class ParkingService {
     @Autowired
     ParkingPlaceRepository parkingPlaceRepository;
     @Autowired
-    ParkingZoneService parkingZoneService;
+    CarRepository carRepository;
+
 
     public List<ParkingDto> findByFilter(ParkingFilterDto filterDto){
         return parkingRepository.findByFilter(filterDto)
@@ -63,8 +67,25 @@ public class ParkingService {
         parkingRepository.save(parking);
     }
 
+    @Transactional
     public void deleteParking(Long id){
+        Parking parking = parkingRepository.findById(id).orElseThrow();
+        if(!parking.getZones().isEmpty()){
+            for(ParkingZone zone : parking.getZones()){
+                if (!zone.getParkingPlaces().isEmpty()){
+                    for (ParkingPlace place : zone.getParkingPlaces()){
+                        if (place.getCar()!= null){
+                            Car car = place.getCar();
+                            car.setParkingPlace(null);
+                            carRepository.save(car);
+                        }
+                    }
+                }
+            }
+
+        }
         parkingRepository.deleteById(id);
+
     }
 
     public ParkingDto convertToDTO(Parking parking){

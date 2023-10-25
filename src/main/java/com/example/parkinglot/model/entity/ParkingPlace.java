@@ -16,7 +16,8 @@ public class ParkingPlace extends BaseEntity {
     @Column(name = "number")
     private int number;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
+//            (optional = false)
     @JoinColumn(name = "parking_zone_id")
     private ParkingZone parkingZone;
 

@@ -6,19 +6,22 @@ import com.example.parkinglot.model.dto.CarDto;
 import com.example.parkinglot.model.dto.ParkingDto;
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingZoneDto;
+import com.example.parkinglot.model.dto.UserDto;
 import com.example.parkinglot.service.CarService;
 import com.example.parkinglot.service.ParkingPlaceService;
 import com.example.parkinglot.service.ParkingService;
 import com.example.parkinglot.service.ParkingZoneService;
+import com.example.parkinglot.service.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @SpringBootTest(classes = ParkingLotApplication.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -31,6 +34,8 @@ public class DatabaseSetUpTest {
     ParkingPlaceService parkingPlaceService;
     @Autowired
     CarService carService;
+    @Autowired
+    UserService userService;
 
     @Test
     @Order(10)
@@ -102,4 +107,21 @@ public class DatabaseSetUpTest {
 
 
     }
+    @Test
+    @Order(50)
+    void testCreateUser(){
+        UserDto userDto1 = new UserDto();
+        userDto1.setName("Ivan Ivanov");
+        userDto1.setCars(new HashSet<>());
+        UserDto userDto2 = new UserDto();
+        userDto2.setName("Georgi Georgiev");
+        Set<CarDto> cars = Set.of(carService.getCarById(1L), carService.getCarById(2L));
+        userDto2.setCars(cars);
+        userService.createUser(userDto1);
+        userService.createUser(userDto2);
+
+        Assertions.assertEquals(2, userService.getAllUsers().size());
+
+    }
+
 }

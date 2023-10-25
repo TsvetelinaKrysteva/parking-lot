@@ -1,16 +1,13 @@
 package com.example.parkinglot.model.dto;
 
-import com.example.parkinglot.model.entity.Car;
-
-import javax.persistence.OneToMany;
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class UserDto {
     private Long id;
     private String name;
 
-    private Set<CarDto> car;
+    private Set<CarDto> cars;
 
 
     public UserDto() {
@@ -19,7 +16,7 @@ public class UserDto {
     public UserDto(Long id, String name, Set<CarDto> car) {
         this.id = id;
         this.name = name;
-        this.car = car;
+        this.cars = car;
     }
 
     public String getName() {
@@ -30,12 +27,12 @@ public class UserDto {
         this.name = name;
     }
 
-    public Set<CarDto> getCar() {
-        return car;
+    public Set<CarDto> getCars() {
+        return cars;
     }
 
-    public void setCar(Set<CarDto> car) {
-        this.car = car;
+    public void setCars(Set<CarDto> cars) {
+        this.cars = cars;
     }
 
     public Long getId() {
@@ -45,4 +42,18 @@ public class UserDto {
     public void setId(Long id) {
         this.id = id;
     }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        UserDto userDto = (UserDto) obj;
+        return Objects.equals(id, userDto.id);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
 }
