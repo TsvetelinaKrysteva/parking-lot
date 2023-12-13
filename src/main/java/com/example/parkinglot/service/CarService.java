@@ -15,7 +15,10 @@ import com.example.parkinglot.service.repository.ParkingZoneRepository;
 import com.example.parkinglot.service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +39,7 @@ public class CarService {
 
 
 
+    @Transactional
     public List<CarDto> findByFilter(CarFilterDto filterDto){
         return carRepository.findByFilter(filterDto)
                 .stream()
@@ -43,6 +47,7 @@ public class CarService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public List<CarDto> getAllCars() {
          List<CarDto> cars = ((List<Car>) carRepository.findAll())
                 .stream()
@@ -66,6 +71,7 @@ public class CarService {
         return convertToDto(carRepository.findByParkingPlaceId(id).orElseThrow( () -> new RuntimeException("This place is empty!")));
     }
 
+    @Transactional
     public void createCar(CarDto carDto){
         ParkingPlace parkingPlace = null;
         Car car = convertToCar(carDto);
@@ -89,23 +95,22 @@ public class CarService {
     }
 
     public void updateCar(CarDto carDto){
-
-
         Car car = convertToCar(carDto);
         carRepository.save(car);
     }
 
     public void deleteCar(Long id){
-
         getCar(id).getParkingPlace().setCar(null);
         carRepository.deleteById(id);
     }
+
     public CarDto convertToDto(Car car){
         ParkingPlaceDto parkingPlaceDto = null;
         ParkingZoneDto parkingZoneDto = null;
-        UserDto userDto = null;
+        List<UserDto> userDtos = new ArrayList<>();
         if(car.getParkingPlace()!=null){
-            ParkingPlace parkingPlace = parkingPlaceRepository.findById(car.getParkingPlace().getId()).orElseThrow();
+//            ParkingPlace parkingPlace = parkingPlaceRepository.findById(car.getParkingPlace().getId()).orElseThrow();
+            ParkingPlace parkingPlace = car.getParkingPlace();
             parkingPlaceDto = new ParkingPlaceDto();
             parkingPlaceDto.setId(parkingPlace.getId());
             parkingPlaceDto.setNumber(Integer.toString(parkingPlace.getNumber()));
@@ -114,34 +119,45 @@ public class CarService {
             parkingZoneDto.setId(parkingZone.getId());
             parkingZoneDto.setName(parkingZone.getName());
         }
-        if(car.getUser()!= null){
-            userDto = new UserDto();
-            User user = userRepository.findById(car.getUser().getId()).orElseThrow();
-            userDto.setId(user.getId());
-            userDto.setName(user.getName());
+        if(car.getUsers()!= null && !CollectionUtils.isEmpty(car.getUsers())){
+            for(User user : car.getUsers()){
+                UserDto userDto = new UserDto();
+                userDto.setId(user.getId());
+                userDto.setName(user.getName());
+                userDtos.add(userDto);
+            }
+
         }
 
-        return new CarDto(car.getPlateNumber(), parkingPlaceDto, parkingZoneDto, userDto, car.getId());
+        return new CarDto(car.getPlateNumber(), parkingPlaceDto, parkingZoneDto, userDtos, car.getId());
     }
 
     public Car convertToCar(CarDto carDto){
         Car car = new Car();
         ParkingPlace parkingPlace = null;
-        User user = null;
+        List<User> users = new ArrayList<>();
         if (carDto.getParkingPlaceDto()!=null){
-            parkingPlace = parkingPlaceRepository.findById(carDto.getParkingPlaceDto().getId()).orElseThrow();
+//            parkingPlace = parkingPlaceRepository.findById(carDto.getParkingPlaceDto().getId()).orElseThrow();
+            parkingPlace = new ParkingPlace();
+            parkingPlace.setId(carDto.getParkingPlaceDto().getId());
         }
-        if(carDto.getUser()!= null){
-            user = userRepository.findById(car.getUser().getId()).orElseThrow();
+        if(carDto.getUsers()!= null && !CollectionUtils.isEmpty(carDto.getUsers())){
+            for (UserDto userDto : carDto.getUsers()){
+                User user = new User();
+                user.setId(userDto.getId());
+                users.add(user);
+            }
 
         }
-        if(carDto.getId() != null){
-            car = carRepository.findById(carDto.getId()).orElseThrow();
+//        if(carDto.getId() != null){
+//            car = carRepository.findById(carDto.getId()).orElseThrow();
+//        }
+        if(carDto.getId()!= null){
+            car.setId(carDto.getId());
         }
-
         car.setPlateNumber(carDto.getPlateNumber());
         car.setParkingPlace(parkingPlace);
-        car.setUser(user);
+        car.setUsers(users);
 //        parkingPlace.setCar(car);
         return car;
 

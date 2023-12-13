@@ -1,6 +1,9 @@
 package com.example.parkinglot.model.entity;
 
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.List;
@@ -11,7 +14,12 @@ public class User extends BaseEntity{
 
     private String name;
 
-    @OneToMany(mappedBy = "user")
+//    @ManyToMany(mappedBy = "user")
+@ManyToMany
+@JoinTable(name = "car_user",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "car_id")
+)
     private List<Car> cars;
 
 

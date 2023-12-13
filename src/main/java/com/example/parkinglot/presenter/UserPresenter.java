@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import java.util.stream.Collectors;
+
 @Scope("prototype")
 @Component
 public class UserPresenter {
@@ -37,12 +39,13 @@ public class UserPresenter {
     }
     public void onSaveUser(UserDto userDto){
         if(StringUtils.isNotBlank(userDto.getName())){
-            for(CarDto carDto: userDto.getCars()){
-                if(carDto.getUser()!=null && !carDto.getUser().equals(userDto)){
-                    this.userView.showErrorMessage(String.format("Car %s belongs to user %s! PLease choose another one!", carDto.getPlateNumber(), carDto.getUser().getName()));
-                    return;
-                }
-            }
+//            for(CarDto carDto: userDto.getCars()){
+//                if(carDto.getUsers()!=null && !carDto.getUsers().contains(userDto)){
+//                    this.userView.showErrorMessage(String.format("Car %s belongs to user %s! PLease choose another one!", carDto.getPlateNumber(),
+//                            String.join(", ", carDto.getUsers().stream().map(UserDto::getName).collect(Collectors.toList()))));
+//                    return;
+//                }
+//            }
             if(userDto.getId()!=null){
                 userService.updateUser(userDto);
             }else{

@@ -5,6 +5,7 @@ import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -42,7 +43,8 @@ public class CarForm extends FormLayout {
     }
 
     public void setCar(CarDto car){
-        binder.readBean(car);
+//        binder.readBean(car);
+        binder.setBean(car);
         this.car = car;
     }
     public void setPlaces(List<ParkingPlaceDto> places){
@@ -69,8 +71,8 @@ public class CarForm extends FormLayout {
 
     private void validateAndSave(){
         try {
-            binder.writeBean(car);
-            onSaveHandler.accept(car);
+            binder.writeBean(binder.getBean());
+            onSaveHandler.accept(binder.getBean());
         } catch (ValidationException e) {
             throw new RuntimeException(e);
         }

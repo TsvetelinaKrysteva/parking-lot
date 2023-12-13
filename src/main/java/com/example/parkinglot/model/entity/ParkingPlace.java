@@ -21,7 +21,9 @@ public class ParkingPlace extends BaseEntity {
     @JoinColumn(name = "parking_zone_id")
     private ParkingZone parkingZone;
 
-    @OneToOne(mappedBy = "parkingPlace")
+    //    @OneToOne(mappedBy = "parkingPlace")
+    @ManyToOne
+    @JoinColumn(name = "car_id", unique = true)
     private Car car;
 
 

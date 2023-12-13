@@ -9,6 +9,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -61,7 +62,7 @@ public class ParkingZone extends BaseEntity{
         this.parkingPlaces = parkingPlaces;
     }
     public void addNewPlace(ParkingPlace parkingPlace){
-        List<ParkingPlace> pPlaces= this.getParkingPlaces();
+        List<ParkingPlace> pPlaces= this.getParkingPlaces() != null ? this.parkingPlaces : new ArrayList<>();
         pPlaces.add(parkingPlace);
         this.setParkingPlaces(pPlaces);
 

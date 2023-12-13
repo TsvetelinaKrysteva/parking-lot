@@ -2,6 +2,7 @@ package com.example.parkinglot.service;
 
 
 import com.example.parkinglot.model.dto.CarDto;
+import com.example.parkinglot.model.dto.CustomValidationException;
 import com.example.parkinglot.model.dto.ParkingDto;
 import com.example.parkinglot.model.dto.ParkingPlaceDto;
 import com.example.parkinglot.model.dto.ParkingPlaceFilterDto;
@@ -15,8 +16,8 @@ import com.example.parkinglot.service.repository.ParkingPlaceRepository;
 import com.example.parkinglot.service.repository.ParkingZoneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -57,6 +58,7 @@ public class ParkingPlaceService {
         return convertToDto(parkingPlaceRepository.findByCarId(carId).orElseThrow( () -> new RuntimeException("Invalid place!")));
     }
 
+    @Transactional
     public List<ParkingPlaceDto> getParkingPLacesByZoneId(Long id){
         return parkingPlaceRepository.findByParkingZoneId(id)
                 .stream()
@@ -65,6 +67,7 @@ public class ParkingPlaceService {
     }
 
 
+    @Transactional
     public void createParkingPlace(ParkingPlaceDto parkingPlaceDto){
         ParkingPlace parkingPlace = convertToParkingPlace(parkingPlaceDto);
         ParkingZone parkingZone = parkingPlace.getParkingZone();
@@ -79,22 +82,35 @@ public class ParkingPlaceService {
 
 
     }
+
+    @Transactional
     public void updateParkingPlace(ParkingPlaceDto parkingPlaceDto){
-
-        ParkingPlace parkingPlace = convertToParkingPlace(parkingPlaceDto);
-        if(parkingPlace.getCar() != null){
-           Optional<ParkingPlace> existingPlace =  parkingPlaceRepository.findByCarId(parkingPlace.getCar().getId());
-           if(existingPlace.isPresent() && !existingPlace.get().getId().equals(parkingPlace.getId())){
-               throw new RuntimeException("Car is already parked!");
-           }
-           Car car = parkingPlace.getCar();
-           car.setParkingPlace(parkingPlace);
-           carRepository.save(car);
+        ParkingPlace existingPlace = parkingPlaceRepository.findById(parkingPlaceDto.getId()).orElseThrow();
+        if (existingPlace.getCar() != null && parkingPlaceDto.getCar() != null) {
+            throw new CustomValidationException("A car is already parked here!");
         }
-
+        ParkingPlace parkingPlace = convertToParkingPlace(parkingPlaceDto);
+//        if(parkingPlace.getCar() != null){
+//           Optional<ParkingPlace> existingPlace =  parkingPlaceRepository.findByCarId(parkingPlace.getCar().getId());
+//           if(existingPlace.isPresent() && !existingPlace.get().getId().equals(parkingPlace.getId())){
+//               throw new RuntimeException("Car is already parked!");
+////               throw new CustomValidationException("Car is already parked!");
+//           }
+        Car currentCar = existingPlace.getCar();
+        Car car = null;
+        if(parkingPlace.getCar()!=null){
+            car = carRepository.findById(parkingPlace.getCar().getId()).orElseThrow();
+            car.setParkingPlace(parkingPlace);
+            carRepository.save(car);
+        }
+        if(currentCar!=null  && car == null){
+            currentCar.setParkingPlace(null);
+            carRepository.save(currentCar);
+        }
         parkingPlaceRepository.save(parkingPlace);
     }
 
+    @Transactional
     public void deleteParkingPlace(Long id){
         ParkingPlace parkingPlace = parkingPlaceRepository.findById(id).orElseThrow();
         if(parkingPlace.getCar()!=null){
@@ -139,6 +155,9 @@ public class ParkingPlaceService {
         ParkingPlace parkingPlace = new ParkingPlace();
         parkingPlace.setId(parkingPlaceDto.getId());
         parkingPlace.setNumber(Integer.parseInt(parkingPlaceDto.getNumber()));
+        ParkingZone parkingZone = new ParkingZone();
+        parkingZone.setId(parkingPlaceDto.getParkingZone().getId());
+        parkingPlace.setParkingZone(parkingZone);
 //        if (parkingPlaceDto.getId() != null){
 //            parkingPlace = parkingPlaceRepository.findById(parkingPlaceDto.getId()).orElseThrow();
 //        }
@@ -147,11 +166,16 @@ public class ParkingPlaceService {
 //        }
 //        parkingPlace.setId(parkingPlaceDto.getId());
 //        parkingPlace.setNumber(Integer.parseInt(parkingPlaceDto.getNumber()));
-        parkingPlace.setParkingZone(parkingZoneRepository.findById(parkingPlaceDto.getParkingZone().getId()).orElseThrow());
-        if(parkingPlaceDto.getCar()!=null){
-            parkingPlace.setCar(carRepository.findById(parkingPlaceDto.getCar().getId()).orElseThrow());
-        }
 
+
+        if(parkingPlaceDto.getCar()!=null){
+            parkingPlace.setParkingZone(parkingZoneRepository.findById(parkingPlaceDto.getParkingZone().getId()).orElseThrow());
+            Car car = new Car();
+            car.setId(parkingPlaceDto.getCar().getId());
+            parkingPlace.setCar(car);
+        }else{
+            parkingPlace.setCar(null);
+        }
         return parkingPlace;
 
     }

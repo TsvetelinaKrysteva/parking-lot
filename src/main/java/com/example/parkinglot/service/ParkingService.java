@@ -11,8 +11,9 @@ import com.example.parkinglot.service.repository.ParkingPlaceRepository;
 import com.example.parkinglot.service.repository.ParkingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+//import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,7 @@ public class ParkingService {
     CarRepository carRepository;
 
 
+    @Transactional
     public List<ParkingDto> findByFilter(ParkingFilterDto filterDto){
         return parkingRepository.findByFilter(filterDto)
                 .stream()
@@ -48,11 +50,13 @@ public class ParkingService {
         return convertToDTO(parkingRepository.findById(id).orElseThrow(() -> new RuntimeException("Parking doesn't exist!")));
     }
 
+    @Transactional
     public Parking getParkingByCarId(Long id){
         ParkingPlace parkingPlace = parkingPlaceRepository.findByCarId(id).orElseThrow(() -> new RuntimeException("Parking place doesn't exist!"));
         return parkingRepository.findByZonesId(parkingPlace.getParkingZone().getId()).orElseThrow(() -> new RuntimeException("Parking doesn't exist!"));
     }
 
+    @Transactional
     public void createParking(ParkingDto parkingDto){
         Parking parking = convertToParking(parkingDto);
         if (parkingRepository.findByName(parking.getName()).isPresent()){
@@ -61,6 +65,7 @@ public class ParkingService {
         parkingRepository.save(parking);
     }
 
+    @Transactional
     public void updateParking(ParkingDto parkingdto, Long parkingDtoId){
         parkingdto.setId(parkingDtoId);
         Parking parking = convertToParking(parkingdto);

@@ -32,11 +32,16 @@ public class ParkingForm extends FormLayout {
 	
 	public ParkingForm() {
 		binder.bindInstanceFields(this);
+		binder.forField(name).bind(ParkingDto::getName, ParkingDto::setName);
+		binder.forField(street).bind(ParkingDto::getStreet, ParkingDto::setStreet);
+		binder.forField(city).bind(ParkingDto::getCity, ParkingDto::setCity);
+		binder.forField(zipCode).bind(ParkingDto::getZipCode, ParkingDto::setZipCode);
 		add(name);
 		add(street);
 		add(city);
 		add(zipCode);
 		add(getButtonsLayout());
+		setParking(new ParkingDto());
 	}
 	
 	private HorizontalLayout getButtonsLayout() {
@@ -53,14 +58,15 @@ public class ParkingForm extends FormLayout {
 	}
 	
 	public void setParking(ParkingDto parking) {
-		binder.readBean(parking);
+//		binder.readBean(parking);
+		binder.setBean(parking);
 		this.parking = parking;
 	}
 	
 	private void validateAndSave() {
 		try {
-			binder.writeBean(parking);
-			fireEvent(new SaveEvent(this, parking));
+			binder.writeBean(binder.getBean());
+			fireEvent(new SaveEvent(this, binder.getBean()));
 		} catch (ValidationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

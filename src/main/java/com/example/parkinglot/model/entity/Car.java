@@ -4,10 +4,13 @@ package com.example.parkinglot.model.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 
 @Entity
@@ -19,24 +22,33 @@ public class Car extends BaseEntity {
     @Column(unique = true)
     private String plateNumber;
 
-    @OneToOne
-    @JoinColumn(name = "parking_place_id")
+//    @OneToOne
+//    @JoinColumn(name = "parking_place_id")
+    @ManyToOne
+    @JoinColumn(name="parking_place_id",unique=true)
     private ParkingPlace parkingPlace;
 
 
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+//    @ManyToOne
+//    @JoinColumn(name = "user_id")
+
+//    @JoinTable(name = "car_user"
+//            joinColumns = @JoinColumn(name = "cars_id"),
+//            inverseJoinColumns = @JoinColumn(name = "users_id")
+//    )
+
+    @ManyToMany(mappedBy = "cars")
+    private List<User> users;
 
     public Car() {
 
     }
 
-    public Car(String plateNumber, ParkingPlace parkingPlace, User user) {
+    public Car(String plateNumber, ParkingPlace parkingPlace, List<User> users) {
         this.plateNumber = plateNumber;
         this.parkingPlace = parkingPlace;
-        this.user = user;
+        this.users = users;
     }
 
 
@@ -56,12 +68,12 @@ public class Car extends BaseEntity {
     public void setParkingPlace(ParkingPlace parkingPlace) {
         this.parkingPlace = parkingPlace;
     }
-    public User getUser() {
-        return user;
+    public List<User> getUsers() {
+        return users;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUsers(List<User> users) {
+        this.users = users;
     }
 
 }

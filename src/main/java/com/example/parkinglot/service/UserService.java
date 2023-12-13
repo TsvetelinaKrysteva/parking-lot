@@ -9,8 +9,8 @@ import com.example.parkinglot.service.repository.CarRepository;
 import com.example.parkinglot.service.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -46,6 +46,7 @@ public class UserService {
         return this.convertToDto(userRepository.findById(id).orElseThrow(() -> new RuntimeException("This user doesn't exist!")));
     }
 
+    @Transactional
     public List<UserDto> findByFilter(UserFilterDto filterDto){
         return userRepository.findByFilter(filterDto)
                 .stream()
@@ -53,13 +54,14 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void createUser(UserDto userDto){
         User user = convertToUser(userDto);
         userRepository.save(user);
         if(!userDto.getCars().isEmpty()){
             for (Car car: user.getCars()){
                 car = carRepository.findById(car.getId()).orElseThrow();
-                car.setUser(user);
+                car.getUsers().add(user);
                 carRepository.save(car);
             }
         }
@@ -77,7 +79,7 @@ public class UserService {
             if(carIds.contains(car.getId())) {
                 continue;
             }
-            car.setUser(null);
+            car.setUsers(null);
             carRepository.save(car);
         }
 
@@ -89,7 +91,7 @@ public class UserService {
         User user = userRepository.findById(id).orElseThrow();
         if(!user.getCars().isEmpty()){
             for(Car car : user.getCars()){
-                car.setUser(null);
+                car.setUsers(null);
             }
         }
         userRepository.deleteById(id);
@@ -124,7 +126,8 @@ public class UserService {
             for (CarDto carDto : userDto.getCars()){
                 Car car = carRepository.findById(carDto.getId()).orElseThrow();
                 user.addCar(car);
-                car.setUser(user);
+                car.getUsers().add(user);
+                carRepository.save(car);
             }
         }
         return user;

@@ -14,8 +14,9 @@ import com.example.parkinglot.service.repository.ParkingRepository;
 import com.example.parkinglot.service.repository.ParkingZoneRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+//import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ public class ParkingZoneService {
 
 
 
+    @Transactional
     public List<ParkingZoneDto> filter(ParkingZoneFilterDto parkingZoneFilterDto){
         return parkingZoneRepository.findByFilter(parkingZoneFilterDto)
                 .stream()
@@ -41,7 +43,6 @@ public class ParkingZoneService {
     }
 
     @Transactional
-
     public List<ParkingZoneDto> getParkingZones() {
         return ((List<ParkingZone>) parkingZoneRepository.findAll())
                 .stream()
@@ -55,6 +56,8 @@ public class ParkingZoneService {
     public ParkingZoneDto getParkingZoneById(Long id) {
         return convertToDto(parkingZoneRepository.findById(id).orElseThrow(() -> new RuntimeException("Such zone doesn't exist!")));
     }
+
+    @Transactional
     public List<ParkingZoneDto> getZonesByParkingId(Long id){
 
         return parkingZoneRepository.findByParkingId(id).stream()
@@ -63,6 +66,7 @@ public class ParkingZoneService {
 //        return (List<ParkingZoneDto>) convertToDto(parkingZoneRepository.findByParkingId(id).orElseThrow( () -> new RuntimeException("Not found")));
     }
 
+    @Transactional
    public ParkingZone getZoneByCarId(Long id){
        ParkingPlace parkingPlace = parkingPlaceRepository.findByCarId(id).orElseThrow( () -> new RuntimeException("Such place doesn't exist!"));
        return parkingZoneRepository.findByParkingPlacesId(parkingPlace.getId()).orElseThrow( () -> new RuntimeException("Such zone doesn't exist!"));
@@ -140,6 +144,7 @@ public class ParkingZoneService {
 
         parkingZone.setName(parkingZoneDto.getName());
         parkingZone.setParking(parkingRepository.findById(parkingZoneDto.getParkingDto().getId()).orElseThrow());
+//        parkingZone.setParkingPlaces(new ArrayList<>());
         return parkingZone;
     }
 
